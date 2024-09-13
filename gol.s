@@ -35,16 +35,7 @@
   .equ BUTTON_0, 0x40
 
   /* LED selection */
-  .equ ALL, 0xFjal clear_leds
-  li a0, 1
-  li a1, 1
-  jal set_pixel
-  li a0, 3
-  li a1, 4
-  jal set_pixel
-  li a0, 0
-  li a1, 0
-  jal set_pixel
+  .equ ALL, 0xF
 
   /* Constants */
   .equ N_SEEDS, 4           /* Number of available seeds */
@@ -60,36 +51,66 @@
 
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
+
+  li t1, 9        /*Set game speed*/
+  li t2, SPEED
+  sb t1, 0(t2)
+
+.L_main:
+  jal clear_leds
+  li a0, 1
+  li a1, 1
+  jal set_pixel
+  li a0, 3
+  li a1, 4
+  jal set_pixel
+  li a0, 0
+  li a1, 0
+  jal set_pixel
+  jal wait
+  
+  j .L_main
   # call reset_game
 
 /* BEGIN:clear_leds */
 clear_leds:
+  li t1, 0x003FF /*Clear all leds*/
+  li t3, LEDS
+  sw t1, 0(t3)  /*Put clear led in LEDS register*/
+  ret
 /* END:clear_leds */
 
 /* BEGIN:set_pixel */
 set_pixel:
+  li t1, 0x0        /*Clear register*/
+  slli t2, a0, 0    /*Bitshift collumn*/
+  or t1, t1, t2
+  slli t2, a1, 4    /*Bitshift row*/
+  or t1, t1, t2
+  li t2, 0x10100
+  or t1, t1, t2     /*Select turn on red led*/
+  li t2, LEDS
+  sw t1, 0(t2)      /*Put t1 in LEDS register*/
+  ret
 /* END:set_pixel */
 
 /* BEGIN:wait */
 wait:
+  li t1, 1          /*Load value for */
+  slli t1, t1, 19   /*Bitshift to 2^19*/
+  li t2, SPEED      /*Load address of SPEED*/
+  lb t2, 0(t2)      /*Value to remove each loop*/
+  li t3, 0          /*Compare to 0*/
+  li t4, 10         /*Compare to 10*/
+  
+  bne t2, t4, .L_wait /*If Game speed is 10, do not wait*/
+  ret
 
-/* END:wait */
+.L_wait:
+  sub t1, t1, t2    /*Substract loop counter*/
+  bge t1, t3, .L_wait /*Go back if not 0*/
 
-/* BEGIN:set_gsa */
-set_gsa:
-/* END:set_gsa */
-
-/* BEGIN:get_gsa */
-get_gsa:
-/* END:get_gsa */
-
-/* BEGIN:draw_gsa */
-draw_gsa:
-/* END:draw_gsa */
-
-/* BEGIN:wait */
-wait:
-
+  ret               /*Return after wait is ended*/
 /* END:wait */
 
 /* BEGIN:set_gsa */
