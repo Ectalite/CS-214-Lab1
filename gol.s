@@ -54,14 +54,36 @@ main:
 
   li t1, 10        /*Set game speed*/
   li t2, SPEED
-  sb t1, 0(t2)
+  sw t1, 0(t2)
 
 .L_main:
-  jal random_gsa
-
-  jal draw_gsa
-
-  jal clear_leds
+  
+  li s1, SPEED
+  lw s2, 0(s1)
+  li a0, 0
+  jal change_speed
+  lw s2, 0(s1)
+  li a0, 0
+  jal change_speed
+  lw s2, 0(s1)
+  li a0, 1
+  jal change_speed
+  lw s2, 0(s1)
+  li a0, 1
+  jal change_speed
+  lw s2, 0(s1)
+  li a0, 1
+  jal change_speed
+  lw s2, 0(s1)
+  
+  li s2, 2
+  sw s2, 0(s1)
+  li a0, 1
+  jal change_speed
+  lw s2, 0(s1)
+  li a0, 1
+  jal change_speed
+  lw s2, 0(s1)
 
   j .L_main
   # call reset_game
@@ -276,6 +298,25 @@ random_gsa:
 change_speed:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+
+  li t2, SPEED
+  lw t3, 0(t2)
+
+  bne a0, x0, .L_change_speed_decrement /*a0 != 0, jump to decrement*/
+
+  li t1, MAX_SPEED
+  beq t1, t3, .L_change_speed_end /*If speed is already maximum then end function*/
+  addi t3, t3, 1  /*Increment speed*/
+
+  j .L_change_speed_end
+
+.L_change_speed_decrement:
+  li t1, MIN_SPEED
+  beq t1, t3, .L_change_speed_end /*If speed is already minimum then end function*/
+  addi t3, t3, -1 /*Decrement speed*/
+
+.L_change_speed_end:
+  sw t3, 0(t2)    /*Save speed*/
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
