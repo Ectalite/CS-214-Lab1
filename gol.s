@@ -57,32 +57,70 @@ main:
   sb t1, 0(t2)
 
 .L_main:
-  li a0, 0xFBBA
-  li a1, 3
+  li a0, 0x01
+  li a1, 0
   jal set_gsa
 
-  li a0, 0x3251
+  /*li a0, 0x02
   li a1, 1
   jal set_gsa
 
-  li a0, 0x9012
+  li a0, 0x04
+  li a1, 2
+  jal set_gsa
+
+  li a0, 0x08
+  li a1, 3
+  jal set_gsa
+
+  li a0, 0x10
+  li a1, 4
+  jal set_gsa
+
+  li a0, 0x20
+  li a1, 5
+  jal set_gsa
+
+  li a0, 0x40
   li a1, 6
   jal set_gsa
 
-  li t1, 1
-  li t2, GSA_ID
-  sw t1, 0(t2)
+  li a0, 0x80
+  li a1, 7
+  jal set_gsa
 
-  li a0, 1
-  jal get_gsa
+  li a0, 0x100
+  li a1, 8
+  jal set_gsa
 
-  li t2, GSA_ID
-  sw x0, 0(t2)
+  li a0, 0x200
+  li a1, 9
+  jal set_gsa
 
-  li a0, 1
-  jal get_gsa
+  li a0, 0x400
+  li a1, 10
+  jal set_gsa
 
-  jal wait
+  li a0, 0x800
+  li a1, 11
+  jal set_gsa*/
+
+  jal draw_gsa
+
+  li a0, 0x04
+  li a1, 0
+  jal set_gsa
+
+  jal draw_gsa
+
+  li a0, 0x100
+  li a1, 0
+  jal set_gsa
+
+  jal draw_gsa
+
+  jal clear_leds
+
   j .L_main
   # call reset_game
 
@@ -204,7 +242,45 @@ get_gsa:
 draw_gsa:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  add sp, sp, -4  /*PUSH s1*/
+  sw s1, 0(sp)
+  add sp, sp, -4  /*PUSH s2*/
+  sw s2, 0(sp)
+  add sp, sp, -4  /*PUSH s3*/
+  sw s3, 0(sp)
 
+  mv s1, x0       /*Line iterator*/
+.L_draw_gsa_exloop:
+  mv a0, s1
+  jal get_gsa
+  mv s2, x0       /*Pixel iterator*/
+  mv s3, a0       /*Store line value in s3*/
+  mv a1, s1       /*Pixel y coordinate is line iterator value*/
+
+.L_draw_gsa_inloop:
+  li t1, 1  
+  sll t1, t1, s2  /*Used to select bit to show on pixel matrix*/
+  and t2, t1, s3  /*Get value of pixel to draw*/
+
+  beq t2, x0, .L_draw_gsa_notOn   /*If pixel is zero, then jump to notOn*/
+  mv a0, s2       /*Pixel x coordinate is pixel iterator value*/
+  jal set_pixel
+
+.L_draw_gsa_notOn:
+  addi s2, s2, 1  /*Increase pixel iterator*/
+  li t2, N_GSA_COLUMNS
+  bltu s2, t2, .L_draw_gsa_inloop /*Loop if pixel iterator < N_GSA_COLUMNS*/
+
+  addi s1, s1, 1  /*Increase line iterator*/
+  li t2, N_GSA_LINES
+  bltu s1, t2, .L_draw_gsa_exloop /*Loop if line iterator < N_GSA_LINES*/
+
+  lw s3, 0(sp)  /*POP s3*/
+  add sp, sp, 4
+  lw s2, 0(sp)  /*POP s2*/
+  add sp, sp, 4
+  lw s1, 0(sp)  /*POP s1*/
+  add sp, sp, 4
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
