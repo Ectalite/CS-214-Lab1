@@ -52,23 +52,37 @@
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
 
-  li t1, 9        /*Set game speed*/
+  li t1, 10        /*Set game speed*/
   li t2, SPEED
   sb t1, 0(t2)
 
 .L_main:
-  jal clear_leds
-  li a0, 1
+  li a0, 0xFBBA
+  li a1, 3
+  jal set_gsa
+
+  li a0, 0x3251
   li a1, 1
-  jal set_pixel
-  li a0, 3
-  li a1, 4
-  jal set_pixel
-  li a0, 0
-  li a1, 0
-  jal set_pixel
+  jal set_gsa
+
+  li a0, 0x9012
+  li a1, 6
+  jal set_gsa
+
+  li t1, 1
+  li t2, GSA_ID
+  sw t1, 0(t2)
+
+  li a0, 1
+  jal get_gsa
+
+  li t2, GSA_ID
+  sw x0, 0(t2)
+
+  li a0, 1
+  jal get_gsa
+
   jal wait
-  
   j .L_main
   # call reset_game
 
@@ -82,7 +96,7 @@ clear_leds:
 
 /* BEGIN:set_pixel */
 set_pixel:
-  li t1, 0x0        /*Clear register*/
+  li t1, 0        /*Clear register*/
   slli t2, a0, 0    /*Bitshift collumn*/
   or t1, t1, t2
   slli t2, a1, 4    /*Bitshift row*/
@@ -100,7 +114,6 @@ wait:
   slli t1, t1, 19   /*Bitshift to 2^19*/
   li t2, SPEED      /*Load address of SPEED*/
   lb t2, 0(t2)      /*Value to remove each loop*/
-  li t3, 0          /*Compare to 0*/
   li t4, 10         /*Compare to 10*/
   
   bne t2, t4, .L_wait /*If Game speed is 10, do not wait*/
@@ -108,17 +121,50 @@ wait:
 
 .L_wait:
   sub t1, t1, t2    /*Substract loop counter*/
-  bge t1, t3, .L_wait /*Go back if not 0*/
+  bge t1, x0, .L_wait /*Go back if not 0*/
 
   ret               /*Return after wait is ended*/
 /* END:wait */
 
 /* BEGIN:set_gsa */
 set_gsa:
+  li t1, GSA_ID
+  lw t1, 0(t1)    /*Load GSA number used*/
+
+  bne t1, x0, .L_set_gsa_one /*Jump if GSA_ID one*/
+  li t2, GSA0     /*Get GSA0 adress*/
+  j .L_set_gsa_mul
+.L_set_gsa_one:
+  li t2, GSA1     /*Get GSA1 adress*/
+
+.L_set_gsa_mul:
+  addi t2, t2, 4  /*Calculate GSA line store adress offset*/
+  addi a1, a1, -1
+  bne a1, x0, .L_set_gsa_mul
+
+  sw a0, 0(t2)   /*Store line at GSA adress offset by line*/
+  ret
+
 /* END:set_gsa */
 
 /* BEGIN:get_gsa */
 get_gsa:
+  li t1, GSA_ID
+  lw t1, 0(t1)    /*Load GSA number used*/
+
+  bne t1, x0, .L_get_gsa_one /*Jump if GSA_ID one*/
+  li t2, GSA0     /*Get GSA0 adress*/
+  j .L_get_gsa_mul
+.L_get_gsa_one:
+  li t2, GSA1     /*Get GSA1 adress*/
+
+.L_get_gsa_mul:
+  addi t2, t2, 4  /*Calculate GSA line store adress offset*/
+  addi a0, a0, -1
+  bne a0, x0, .L_get_gsa_mul
+
+  lw a0, 0(t2)   /*Store line at GSA adress offset by line*/
+  ret
 /* END:get_gsa */
 
 /* BEGIN:draw_gsa */
@@ -138,7 +184,7 @@ pause_game:
 /* END:pause_game */
 
 /* BEGIN:change_steps */
-change_steps:           
+change_steps:
 /* END:change_steps */
 
 /* BEGIN:set_seed */
