@@ -57,65 +57,7 @@ main:
   sb t1, 0(t2)
 
 .L_main:
-  li a0, 0x01
-  li a1, 0
-  jal set_gsa
-
-  /*li a0, 0x02
-  li a1, 1
-  jal set_gsa
-
-  li a0, 0x04
-  li a1, 2
-  jal set_gsa
-
-  li a0, 0x08
-  li a1, 3
-  jal set_gsa
-
-  li a0, 0x10
-  li a1, 4
-  jal set_gsa
-
-  li a0, 0x20
-  li a1, 5
-  jal set_gsa
-
-  li a0, 0x40
-  li a1, 6
-  jal set_gsa
-
-  li a0, 0x80
-  li a1, 7
-  jal set_gsa
-
-  li a0, 0x100
-  li a1, 8
-  jal set_gsa
-
-  li a0, 0x200
-  li a1, 9
-  jal set_gsa
-
-  li a0, 0x400
-  li a1, 10
-  jal set_gsa
-
-  li a0, 0x800
-  li a1, 11
-  jal set_gsa*/
-
-  jal draw_gsa
-
-  li a0, 0x04
-  li a1, 0
-  jal set_gsa
-
-  jal draw_gsa
-
-  li a0, 0x100
-  li a1, 0
-  jal set_gsa
+  jal random_gsa
 
   jal draw_gsa
 
@@ -290,6 +232,32 @@ draw_gsa:
 random_gsa:   
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+
+  mv s1, x0       /*Line iterator*/
+.L_random_gsa_exloop:
+
+  mv a0, x0       /*Initialize line to 0*/  
+  mv s2, x0       /*Pixel iterator*/
+.L_random_gsa_inloop:
+
+  li t1, RANDOM
+  lw t1, 0(t1)    /*Get random value*/
+  and t1, t1, 2   /*Modulo 2*/
+  srli t1, t1, 1  /*Move possible 0x2 to the right*/
+  sll t1, t1, s2  /*Move possible 0x1 to the right pixel position*/
+  or a0, a0, t1   /*Put pixel value in a0*/
+
+  addi s2, s2, 1                  /*Increase pixel iterator*/
+  li t2, N_GSA_COLUMNS
+  bltu s2, t2, .L_random_gsa_inloop /*Loop if pixel iterator < N_GSA_COLUMNS*/
+
+  /*Store randomized line*/
+  mv a1, s1  /*Give line number*/
+  jal set_gsa /*a0 is already set with inloop*/
+
+  addi s1, s1, 1                  /*Increase line iterator*/
+  li t2, N_GSA_LINES
+  bltu s1, t2, .L_random_gsa_exloop /*Loop if line iterator < N_GSA_LINES*/
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
