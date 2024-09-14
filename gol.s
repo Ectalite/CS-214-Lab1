@@ -232,6 +232,10 @@ draw_gsa:
 random_gsa:   
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  add sp, sp, -4  /*PUSH s1*/
+  sw s1, 0(sp)
+  add sp, sp, -4  /*PUSH s2*/
+  sw s2, 0(sp)
 
   mv s1, x0       /*Line iterator*/
 .L_random_gsa_exloop:
@@ -259,6 +263,10 @@ random_gsa:
   li t2, N_GSA_LINES
   bltu s1, t2, .L_random_gsa_exloop /*Loop if line iterator < N_GSA_LINES*/
 
+  lw s2, 0(sp)  /*POP s2*/
+  add sp, sp, 4
+  lw s1, 0(sp)  /*POP s1*/
+  add sp, sp, 4
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret        
