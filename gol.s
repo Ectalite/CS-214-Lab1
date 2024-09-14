@@ -88,14 +88,23 @@ main:
 
 /* BEGIN:clear_leds */
 clear_leds:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
   li t1, 0x003FF /*Clear all leds*/
   li t3, LEDS
   sw t1, 0(t3)  /*Put clear led in LEDS register*/
+  
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
   ret
 /* END:clear_leds */
 
 /* BEGIN:set_pixel */
 set_pixel:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
   li t1, 0        /*Clear register*/
   slli t2, a0, 0    /*Bitshift collumn*/
   or t1, t1, t2
@@ -105,11 +114,17 @@ set_pixel:
   or t1, t1, t2     /*Select turn on red led*/
   li t2, LEDS
   sw t1, 0(t2)      /*Put t1 in LEDS register*/
+  
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
   ret
 /* END:set_pixel */
 
 /* BEGIN:wait */
 wait:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
   li t1, 1          /*Load value for */
   slli t1, t1, 19   /*Bitshift to 2^19*/
   li t2, SPEED      /*Load address of SPEED*/
@@ -123,11 +138,16 @@ wait:
   sub t1, t1, t2    /*Substract loop counter*/
   bge t1, x0, .L_wait /*Go back if not 0*/
 
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
   ret               /*Return after wait is ended*/
 /* END:wait */
 
 /* BEGIN:set_gsa */
 set_gsa:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
   li t1, GSA_ID
   lw t1, 0(t1)    /*Load GSA number used*/
 
@@ -143,12 +163,18 @@ set_gsa:
   bne a1, x0, .L_set_gsa_mul
 
   sw a0, 0(t2)   /*Store line at GSA adress offset by line*/
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
   ret
 
 /* END:set_gsa */
 
 /* BEGIN:get_gsa */
 get_gsa:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
   li t1, GSA_ID
   lw t1, 0(t1)    /*Load GSA number used*/
 
@@ -164,71 +190,170 @@ get_gsa:
   bne a0, x0, .L_get_gsa_mul
 
   lw a0, 0(t2)   /*Store line at GSA adress offset by line*/
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
   ret
 /* END:get_gsa */
 
 /* BEGIN:draw_gsa */
 draw_gsa:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:draw_gsa */
 
 /* BEGIN:random_gsa */
-random_gsa:           
+random_gsa:   
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret        
 /* END:random_gsa */
 
 /* BEGIN:change_speed */
 change_speed:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:change_speed */
 
 /* BEGIN:pause_game */
 pause_game:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:pause_game */
 
 /* BEGIN:change_steps */
 change_steps:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:change_steps */
 
 /* BEGIN:set_seed */
 set_seed:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:set_seed */
 
 /* BEGIN:increment_seed */
-increment_seed:                
+increment_seed:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret               
 /* END:increment_seed */
 
 /* BEGIN:update_state */
 update_state:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:update_state */
 
 /* BEGIN:select_action */
 select_action:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:select_action */
 
 /* BEGIN:cell_fate */
 cell_fate:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:cell_fate */
 
 /* BEGIN:find_neighbours */
 find_neighbours:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:find_neighbours */
 
 /* BEGIN:update_gsa */
 update_gsa:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:update_gsa */
 
 /* BEGIN:get_input */
 get_input:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:get_input */
 
 /* BEGIN:decrement_step */
 decrement_step:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:decrement_step */
 
 /* BEGIN:reset_game */
 reset_game:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:reset_game */
 
 /* BEGIN:mask */
 mask:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
+
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
+  ret
 /* END:mask */
 
 /* 7-segment display */
