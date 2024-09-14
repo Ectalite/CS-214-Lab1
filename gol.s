@@ -158,9 +158,11 @@ set_gsa:
   li t2, GSA1     /*Get GSA1 adress*/
 
 .L_set_gsa_mul:
+  beq a1, x0, .L_set_gsa_l_zero /*Do not add offset if line is 0*/
   addi t2, t2, 4  /*Calculate GSA line store adress offset*/
   addi a1, a1, -1
-  bne a1, x0, .L_set_gsa_mul
+  blt x0, a1, .L_set_gsa_mul
+.L_set_gsa_l_zero:
 
   sw a0, 0(t2)   /*Store line at GSA adress offset by line*/
 
@@ -185,9 +187,11 @@ get_gsa:
   li t2, GSA1     /*Get GSA1 adress*/
 
 .L_get_gsa_mul:
+  beq a1, x0, .L_get_gsa_l_zero /*Do not add offset if line is 0*/
   addi t2, t2, 4  /*Calculate GSA line store adress offset*/
   addi a0, a0, -1
-  bne a0, x0, .L_get_gsa_mul
+  blt x0, a0, .L_get_gsa_mul
+.L_get_gsa_l_zero:
 
   lw a0, 0(t2)   /*Store line at GSA adress offset by line*/
 
