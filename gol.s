@@ -187,7 +187,7 @@ get_gsa:
   li t2, GSA1     /*Get GSA1 adress*/
 
 .L_get_gsa_mul:
-  beq a1, x0, .L_get_gsa_l_zero /*Do not add offset if line is 0*/
+  beq a0, x0, .L_get_gsa_l_zero /*Do not add offset if line is 0*/
   addi t2, t2, 4  /*Calculate GSA line store adress offset*/
   addi a0, a0, -1
   blt x0, a0, .L_get_gsa_mul
