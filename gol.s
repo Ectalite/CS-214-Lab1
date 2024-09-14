@@ -129,7 +129,7 @@ clear_leds:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
-  li t1, 0x003FF /*Clear all leds*/
+  li t1, 0x007FF /*Clear all leds*/
   li t3, LEDS
   sw t1, 0(t3)  /*Put clear led in LEDS register*/
   
