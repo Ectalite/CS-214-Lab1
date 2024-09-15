@@ -52,58 +52,40 @@
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
 
-  li t1, 10        /*Set game speed*/
+  /*Set game speed*/
+  li t1, 10        
   li t2, SPEED
   sw t1, 0(t2)
 
-  li t1, 1         /*Start with current step to 1*/
+  /*Start with current step to 1*/
+  li t1, 1
   li t2, CURR_STEP
   sw t1, 0(t2)
 
+  /*Put seed 0 on screen*/
+  /*Copy seed in GSA*/
+  lw s1, SEEDS    /*Get SEEDS base adress*/
+  mv s2, x0       /*Line iterator*/
+.L_reset_loop:
+
+  lw a0, 0(s1)    /*Get line from seed*/
+  mv a1, s2       /*Give line number*/
+  jal set_gsa     /*Store line*/
+
+  addi s1, s1, 4  /*Icrease line address*/
+  addi s2, s2, 1  /*Increase line iterator*/
+  li t1, N_GSA_LINES
+  bltu s2, t1, .L_reset_loop /*Loop if line iterator < N_GSA_LINES*/
+  jal draw_gsa
+  jal clear_leds
+
 .L_main:
-  li s1, CURR_STEP
 
-  li a0, 1
-  li a1, 0
-  li a2, 0
-  jal change_steps
-  lw t1, 0(s1)
+  jal increment_seed
 
-  li a0, 0
-  li a1, 1
-  li a2, 0
-  jal change_steps
-  lw t1, 0(s1)
+  jal draw_gsa
 
-  li a0, 0
-  li a1, 0
-  li a2, 1
-  jal change_steps
-  lw t1, 0(s1)
-
-  li a0, 1
-  li a1, 1
-  li a2, 0
-  jal change_steps
-  lw t1, 0(s1)
-
-  li a0, 0
-  li a1, 1
-  li a2, 1
-  jal change_steps
-  lw t1, 0(s1)
-
-  li a0, 1
-  li a1, 0
-  li a2, 1
-  jal change_steps
-  lw t1, 0(s1)
-
-  li a0, 1
-  li a1, 1
-  li a2, 1
-  jal change_steps
-  lw t1, 0(s1)
+  jal clear_leds
 
   j .L_main
   # call reset_game
@@ -399,7 +381,53 @@ set_seed:
 increment_seed:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  add sp, sp, -4  /*PUSH s1*/
+  sw s1, 0(sp)
+  add sp, sp, -4  /*PUSH s2*/
+  sw s2, 0(sp)
 
+  li t1, CURR_STATE
+  lw t1, 0(t1)    /*Get current game state*/
+  bne t1, x0, .L_increment_seed_random /*If game state is not INIT then jump to random seed generation*/
+  li t1, SEED
+  lw t2, 0(t1)    /*Get current seed ID*/
+  li t3, N_SEEDS  
+  bgeu t2, t3, .L_increment_seed_random /*If seed ID is greater or equal to number of seeds then jump to random seed generation*/
+
+  addi t2, t2, 1
+  sw t2, 0(t1)    /*Increase and save seed ID*/
+
+  /*Copy seed in GSA*/
+  lw s1, SEEDS    /*Get SEEDS base adress*/
+.L_increment_seed_SEEDoffset:
+  addi s1, s1, 40
+  addi t2, t2, -1
+  bne t2, x0, .L_increment_seed_SEEDoffset /*Calculate adress offset for the good seed*/
+
+  mv s2, x0       /*Line iterator*/
+.L_increment_seed_loop:
+
+  lw a0, 0(s1)    /*Get line from seed*/
+  mv a1, s2       /*Give line number*/
+  jal set_gsa     /*Store line*/
+
+  addi s1, s1, 4  /*Icrease line address*/
+  addi s2, s2, 1  /*Increase line iterator*/
+  li t1, N_GSA_LINES
+  bltu s2, t1, .L_increment_seed_loop /*Loop if line iterator < N_GSA_LINES*/
+  /*End copy seed in GSA*/
+  
+  j .L_increment_seed_end
+.L_increment_seed_random:
+
+  jal random_gsa
+
+.L_increment_seed_end:
+
+  lw s2, 0(sp)  /*POP s2*/
+  add sp, sp, 4
+  lw s1, 0(sp)  /*POP s1*/
+  add sp, sp, 4
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret               
@@ -516,7 +544,7 @@ font_data:
   .word 0x79
   .word 0x71
 
-  seed0:
+seed0:
 	.word 0xC00
 	.word 0xC00
 	.word 0x000
