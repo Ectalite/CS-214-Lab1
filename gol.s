@@ -56,11 +56,54 @@ main:
   li t2, SPEED
   sw t1, 0(t2)
 
+  li t1, 1         /*Start with current step to 1*/
+  li t2, CURR_STEP
+  sw t1, 0(t2)
+
 .L_main:
-  
-  li s1, PAUSE
+  li s1, CURR_STEP
+
+  li a0, 1
+  li a1, 0
+  li a2, 0
+  jal change_steps
   lw t1, 0(s1)
-  jal pause_game
+
+  li a0, 0
+  li a1, 1
+  li a2, 0
+  jal change_steps
+  lw t1, 0(s1)
+
+  li a0, 0
+  li a1, 0
+  li a2, 1
+  jal change_steps
+  lw t1, 0(s1)
+
+  li a0, 1
+  li a1, 1
+  li a2, 0
+  jal change_steps
+  lw t1, 0(s1)
+
+  li a0, 0
+  li a1, 1
+  li a2, 1
+  jal change_steps
+  lw t1, 0(s1)
+
+  li a0, 1
+  li a1, 0
+  li a2, 1
+  jal change_steps
+  lw t1, 0(s1)
+
+  li a0, 1
+  li a1, 1
+  li a2, 1
+  jal change_steps
+  lw t1, 0(s1)
 
   j .L_main
   # call reset_game
@@ -320,6 +363,23 @@ change_steps:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
+  li t1, CURR_STEP
+  lw t2, 0(t1)    /*Load value of current steps*/
+
+  beq a0, x0, .L_change_steps_a0 /*If a0 == 0 then do not increase units*/
+  addi t2, t2, 0x001
+.L_change_steps_a0:
+
+  beq a1, x0, .L_change_steps_a1 /*If a1 == 0 then do not increase tens*/
+  addi t2, t2, 0x010
+.L_change_steps_a1:
+
+  beq a2, x0, .L_change_steps_a2 /*If a2 == 0 then do not increase hundreds*/
+  addi t2, t2, 0x100
+.L_change_steps_a2:
+
+  sw t2, 0(t1)    /*Store value of current steps*/
+
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
@@ -419,6 +479,8 @@ decrement_step:
 reset_game:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+
+  /*set curr step to 1*/
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
