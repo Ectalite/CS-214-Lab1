@@ -58,32 +58,9 @@ main:
 
 .L_main:
   
-  li s1, SPEED
-  lw s2, 0(s1)
-  li a0, 0
-  jal change_speed
-  lw s2, 0(s1)
-  li a0, 0
-  jal change_speed
-  lw s2, 0(s1)
-  li a0, 1
-  jal change_speed
-  lw s2, 0(s1)
-  li a0, 1
-  jal change_speed
-  lw s2, 0(s1)
-  li a0, 1
-  jal change_speed
-  lw s2, 0(s1)
-  
-  li s2, 2
-  sw s2, 0(s1)
-  li a0, 1
-  jal change_speed
-  lw s2, 0(s1)
-  li a0, 1
-  jal change_speed
-  lw s2, 0(s1)
+  li s1, PAUSE
+  lw t1, 0(s1)
+  jal pause_game
 
   j .L_main
   # call reset_game
@@ -327,6 +304,11 @@ change_speed:
 pause_game:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+
+  li t1, PAUSE
+  lw t2, 0(t1)
+  xori t2, t2, 1  /*XOR gives us the inverse each time*/
+  sw t2, 0(t1)
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
