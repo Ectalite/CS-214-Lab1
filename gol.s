@@ -496,6 +496,44 @@ select_action:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
+  li t1, JC
+  and t2, a0, t1
+  beq t2, x0, .L_select_action_endJC /*If JC is not pressed then jump to endJC*/
+  jal increment_seed
+
+.L_select_action_endJC
+
+  li t1, JR
+  ori t1, t1, JL
+  and t2, a0, t1
+  beq t2, x0, .L_select_action_endJR_JL /*If JR or JL is not pressed then jump to endJR_JL*/
+  jal change_speed
+
+.L_select_action_endJR_JL
+
+  li t1, JB
+  and t2, a0, t1
+  beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
+  j reset /*We don't need to return from reset*/
+
+.L_select_action_endJB
+
+  li t1, JT
+  and t2, a0, t1
+  beq t2, x0, .L_select_action_endJT /*If JT is not pressed then jump to endJT*/
+  jal random_gsa
+
+.L_select_action_endJT
+
+  li t1, BUTTON_0
+  ori t1, t1, BUTTON_1
+  ori t1, t1, BUTTON_2
+  and t2, a0, t1
+  beq t2, x0, .L_select_action_0_1_2 /*If 0, 1 or 2 is not pressed then jump to 0_1_2*/
+  jal change_steps
+
+.L_select_action_0_1_2
+
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
