@@ -77,15 +77,34 @@ main:
   li t1, N_GSA_LINES
   bltu s2, t1, .L_reset_loop /*Loop if line iterator < N_GSA_LINES*/
   jal draw_gsa
-  jal clear_leds
 
+  li s1, CURR_STATE
 .L_main:
 
-  jal increment_seed
+  lw t1, 0(s1)
 
-  jal draw_gsa
+  li a0, JC
+  jal update_state
+  lw t1, 0(s1)
+  
+  li t2, SEED
+  li t3, N_SEEDS
+  sw t3, 0(t2)
+  li a0, JC
+  jal update_state
+  lw t1, 0(s1)
 
-  jal clear_leds
+  li a0, JR
+  jal update_state
+  lw t1, 0(s1)
+
+  li t2, INIT
+  sw t2, 0(s1)
+  lw t1, 0(s1)
+
+  li a0, JR
+  jal update_state
+  lw t1, 0(s1)
 
   j .L_main
   # call reset_game
@@ -438,6 +457,35 @@ update_state:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
+  li t3, CURR_STATE 
+  
+  lw t2, 0(t3)  /*Get current state value*/
+  li t1, RUN
+  and t1, t1, t2
+  bne t1, x0, .L_update_state_endJR /*Quit function if game is running*/
+
+  li t1, RAND
+  and t1, t1, t2
+  bne t1, x0, .L_update_state_endJC /*Ignore JC if game state is already RAND*/
+  
+  li t1, JC
+  and t2, a0, t1
+  beq t2, x0, .L_update_state_endJC /*If JC is not pressed then jump to endJC*/
+  li t1, SEED
+  lw t1, 0(t1)    /*Load seed ID*/
+  li t2, N_SEEDS
+  bltu t1, t2, .L_update_state_endJC /*If seed ID < N then jump to endJC*/
+  li t1, RAND
+  sw t1, 0(t3)  /*Update game state to RAND*/
+
+.L_update_state_endJC:
+  li t1, JR
+  and t2, a0, t1
+  beq t2, x0, .L_update_state_endJR /*If JR is not pressed then jump to endJR*/
+  li t1, RUN
+  sw t1, 0(t3)  /*Update game state to RUN*/
+
+.L_update_state_endJR:
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
