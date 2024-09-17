@@ -543,7 +543,25 @@ select_action:
 cell_fate:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  /*If cell dies or not (a0 number of neighbouring cells and a1 cell state)*/
+  mv t2, a0 /*number of neighbouring cells*/
 
+  beq a1, x0, .L_cell_fate_dead /*If cell is dead then jump*/
+  li a0, 1
+  li t1, 2
+  beq t2, t1, .L_cell_fate_end  /*If 2 neighbouring cells then keep alive*/
+  li t1, 3
+  beq t2, t1, .L_cell_fate_end  /*If 3 neighbouring cells then keep alive*/
+  li a0, x0   /*Else kill cell*/
+  j .L_cell_fate_end
+
+.L_cell_fate_dead:
+  li t1, 3
+  bne t2, t1, .L_cell_fate_end  /*If not 3 neighbouring cells then keep dead*/
+  li a0, 1    /*Else reproduction: cell is alive*/
+
+.L_cell_fate_end:
+  /*a0 returns cell state (1 alive, 0 dead)*/
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
