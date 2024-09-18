@@ -63,19 +63,7 @@ main:
   sw t1, 0(t2)
 
   /*Put seed 0 on screen*/
-  /*Copy seed in GSA*/
-  lw s1, SEEDS    /*Get SEEDS base adress*/
-  mv s2, x0       /*Line iterator*/
-.L_reset_loop:
-
-  lw a0, 0(s1)    /*Get line from seed*/
-  mv a1, s2       /*Give line number*/
-  jal set_gsa     /*Store line*/
-
-  addi s1, s1, 4  /*Icrease line address*/
-  addi s2, s2, 1  /*Increase line iterator*/
-  li t1, N_GSA_LINES
-  bltu s2, t1, .L_reset_loop /*Loop if line iterator < N_GSA_LINES*/
+  jal set_seed
   jal draw_gsa
 
   li s1, CURR_STATE
@@ -391,7 +379,27 @@ change_steps:
 set_seed:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  add sp, sp, -4  /*PUSH s1*/
+  sw s1, 0(sp)
+  add sp, sp, -4  /*PUSH s2*/
+  sw s2, 0(sp)
 
+  mv s2, x0       /*Line iterator*/
+.L_set_seed_loop:
+
+  lw a0, 0(s1)    /*Get line from seed*/
+  mv a1, s2       /*Give line number*/
+  jal set_gsa     /*Store line*/
+
+  addi s1, s1, 4  /*Icrease line address*/
+  addi s2, s2, 1  /*Increase line iterator*/
+  li t1, N_GSA_LINES
+  bltu s2, t1, .L_set_seed_loop /*Loop if line iterator < N_GSA_LINES*/
+
+  lw s2, 0(sp)  /*POP s2*/
+  add sp, sp, 4
+  lw s1, 0(sp)  /*POP s1*/
+  add sp, sp, 4
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
