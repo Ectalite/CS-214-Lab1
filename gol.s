@@ -510,7 +510,7 @@ select_action:
   beq t2, x0, .L_select_action_endJC /*If JC is not pressed then jump to endJC*/
   jal increment_seed
 
-.L_select_action_endJC
+.L_select_action_endJC:
 
   li t1, JR
   ori t1, t1, JL
@@ -518,21 +518,21 @@ select_action:
   beq t2, x0, .L_select_action_endJR_JL /*If JR or JL is not pressed then jump to endJR_JL*/
   jal change_speed
 
-.L_select_action_endJR_JL
+.L_select_action_endJR_JL:
 
   li t1, JB
   and t2, a0, t1
   beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
-  j reset /*We don't need to return from reset*/
+  j reset_game /*We don't need to return from reset*/
 
-.L_select_action_endJB
+.L_select_action_endJB:
 
   li t1, JT
   and t2, a0, t1
   beq t2, x0, .L_select_action_endJT /*If JT is not pressed then jump to endJT*/
   jal random_gsa
 
-.L_select_action_endJT
+.L_select_action_endJT:
 
   li t1, BUTTON_0
   ori t1, t1, BUTTON_1
@@ -541,7 +541,7 @@ select_action:
   beq t2, x0, .L_select_action_0_1_2 /*If 0, 1 or 2 is not pressed then jump to 0_1_2*/
   jal change_steps
 
-.L_select_action_0_1_2
+.L_select_action_0_1_2:
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
@@ -561,7 +561,7 @@ cell_fate:
   beq t2, t1, .L_cell_fate_end  /*If 2 neighbouring cells then keep alive*/
   li t1, 3
   beq t2, t1, .L_cell_fate_end  /*If 3 neighbouring cells then keep alive*/
-  li a0, x0   /*Else kill cell*/
+  mv a0, x0   /*Else kill cell*/
   j .L_cell_fate_end
 
 .L_cell_fate_dead:
