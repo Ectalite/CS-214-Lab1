@@ -363,6 +363,15 @@ set_seed:
   add sp, sp, -4  /*PUSH s2*/
   sw s2, 0(sp)
 
+  li t1, SEED     /*Get current seed id*/
+  lw t2, 0(t1)
+  lw s1, SEEDS    /*Get SEEDS base adress*/
+  beq t2, x0, .L_set_seed_SEEDzero
+.L_set_seed_SEEDoffset:
+  addi s1, s1, 40
+  addi t2, t2, -1
+  bne t2, x0, .L_set_seed_SEEDoffset /*Calculate adress offset for the good seed*/
+.L_set_seed_SEEDzero:
   mv s2, x0       /*Line iterator*/
 .L_set_seed_loop:
 
