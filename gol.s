@@ -69,30 +69,9 @@ main:
   li s1, CURR_STATE
 .L_main:
 
-  lw t1, 0(s1)
-
-  li a0, JC
-  jal update_state
-  lw t1, 0(s1)
-  
-  li t2, SEED
-  li t3, N_SEEDS
-  sw t3, 0(t2)
-  li a0, JC
-  jal update_state
-  lw t1, 0(s1)
-
-  li a0, JR
-  jal update_state
-  lw t1, 0(s1)
-
-  li t2, INIT
-  sw t2, 0(s1)
-  lw t1, 0(s1)
-
-  li a0, JR
-  jal update_state
-  lw t1, 0(s1)
+  li a0, 0
+  li a1, 6
+  jal find_neighbours
 
   j .L_main
   # call reset_game
@@ -580,8 +559,95 @@ cell_fate:
 find_neighbours:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  add sp, sp, -4  /*PUSH s1*/
+  sw s1, 0(sp)
+  add sp, sp, -4  /*PUSH s2*/
+  sw s2, 0(sp)
+  add sp, sp, -4  /*PUSH s3*/
+  sw s3, 0(sp)
+  add sp, sp, -4  /*PUSH s4*/
+  sw s4, 0(sp)
+  add sp, sp, -4  /*PUSH s5*/
+  sw s5, 0(sp)
 
-  lw ra, 0(sp)  /*POP return adress*/
+  /*a0: cell x coordinate | a1: cell y coordinate*/
+  mv s1, x0 /*Neighbours counter*/
+  mv s2, a0 /*Cell x coordinate*/
+  mv s3, a1 /*Cell y coordinate*/
+  /*s4 is x-1 and s5 is x+1*/
+  
+  /*Calculate x-1 and x+1 mod N_GSA_COLUMNS*/
+  addi s4, s2, -1
+  bge s4, x0, .L_find_neighbours_C  /*If result of addition is negative, then add N_GSA_COLUMNS*/
+  addi s4, s4, N_GSA_COLUMNS
+.L_find_neighbours_C:
+  addi s5, s2, 1
+  li t1, N_GSA_COLUMNS
+  blt s5, t1, .L_find_neighbours_D  /*If result of addition bigger/equal than N_GSA_COLUMNS, then add N_GSA_COLUMNS*/
+  addi s5, s5, -N_GSA_COLUMNS
+.L_find_neighbours_D:
+
+  /*Get line y-1 mod N_GSA_LINES*/
+  addi a0, s3, -1
+  bge a0, x0, .L_find_neighbours_A  /*If result of addition is negative, then add N_GSA_LINES*/
+  addi a0, a0, N_GSA_LINES
+.L_find_neighbours_A:
+  jal get_gsa   /*Get GSA line*/
+  li t1, 1
+  srl t2, a0, s4  /*Check x-1*/
+  and t2, t2, t1
+  add s1, s1, t2
+  srl t2, a0, s2  /*Check x*/
+  and t2, t2, t1
+  add s1, s1, t2
+  srl t2, a0, s5  /*Check x+1*/
+  and t2, t2, t1
+  add s1, s1, t2
+
+  /*Get line y+1 mod N_GSA_LINES*/
+  addi a0, s3, 1
+  li t1, N_GSA_LINES
+  blt a0, t1, .L_find_neighbours_B  /*If result of addition is bigger/equal than N_GSA_LINES, then sub N_GSA_LINES*/
+  addi a0, a0, -N_GSA_LINES
+
+.L_find_neighbours_B:
+  jal get_gsa     /*Get GSA line*/
+  li t1, 1
+  srl t2, a0, s4  /*Check x-1*/
+  and t2, t2, t1
+  add s1, s1, t2
+  srl t2, a0, s2  /*Check x*/
+  and t2, t2, t1
+  add s1, s1, t2
+  srl t2, a0, s5  /*Check x+1*/
+  and t2, t2, t1
+  add s1, s1, t2
+
+  /*Get line y*/
+  mv a0, s3
+  jal get_gsa     /*Get GSA line*/
+  li t1, 1
+  srl t2, a0, s4  /*Check x-1*/
+  and t2, t2, t1
+  add s1, s1, t2
+  srl t2, a0, s5  /*Check x+1*/
+  and t2, t2, t1
+  add s1, s1, t2
+
+  srl a1, a0, s2  /*a1: Cell state (1 alive, 0 dead)*/
+  mv a0, s1       /*a0: Count of neighbours*/
+
+  lw s5, 0(sp)  /*POP s5*/
+  add sp, sp, 4
+  lw s4, 0(sp)  /*POP s4*/
+  add sp, sp, 4
+  lw s3, 0(sp)  /*POP s3*/
+  add sp, sp, 4
+  lw s2, 0(sp)  /*POP s2*/
+  add sp, sp, 4
+  lw s1, 0(sp)  /*POP s1*/
+  add sp, sp, 4
+  lw ra, 0(sp)   /*POP return adress*/
   add sp, sp, 4
   ret
 /* END:find_neighbours */
