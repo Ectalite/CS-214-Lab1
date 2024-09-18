@@ -149,7 +149,8 @@ wait:
   sw ra, 0(sp)
 
   li t1, 1          /*Load value for */
-  slli t1, t1, 19   /*Bitshift to 2^19*/
+  /*slli t1, t1, 19*/   /*Bitshift to 2^19 for real board*/
+  slli t1, t1, 10   /*Bitshift to 2^10 for simulation*/
   li t2, SPEED      /*Load address of SPEED*/
   lb t2, 0(t2)      /*Value to remove each loop*/
   li t4, 10         /*Compare to 10*/
