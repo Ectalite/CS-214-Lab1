@@ -554,6 +554,7 @@ cell_fate:
 
 .L_cell_fate_dead:
   li t1, 3
+  mv a0, a1
   bne t2, t1, .L_cell_fate_end  /*If not 3 neighbouring cells then keep dead*/
   li a0, 1    /*Else reproduction: cell is alive*/
 
@@ -644,6 +645,7 @@ find_neighbours:
   add s1, s1, t2
 
   srl a1, a0, s2  /*a1: Cell state (1 alive, 0 dead)*/
+  andi a1, a1, 1
   mv a0, s1       /*a0: Count of neighbours*/
 
   lw s5, 0(sp)  /*POP s5*/
