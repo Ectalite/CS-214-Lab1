@@ -51,33 +51,15 @@
 
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
-
-  /*Set game speed*/
-  li t1, 10        
-  li t2, SPEED
-  sw t1, 0(t2)
-
-  /*Start with current step to 1*/
-  li t1, 1
-  li t2, CURR_STEP
-  sw t1, 0(t2)
-
-  li t1, PAUSE
-  li t2, RUNNING
-  sw t2, 0(t1)
-
-  /*jal increment_seed*/
-
-  /*Put seed 0 on screen*/
-  jal set_seed
-  jal draw_gsa
-
-  li s1, CURR_STATE
+  jal reset_game
 .L_main:
 
-  jal clear_leds
+  jal update_state
   jal update_gsa
+  jal clear_leds
+  jal mask
   jal draw_gsa
+  /*jal wait*/
 
   j .L_main
   # call reset_game
@@ -768,7 +750,23 @@ reset_game:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
-  /*set curr step to 1*/
+  /*Set game speed*/
+  li t1, 10        
+  li t2, SPEED
+  sw t1, 0(t2)
+
+  /*Start with current step to 1*/
+  li t1, 1
+  li t2, CURR_STEP
+  sw t1, 0(t2)
+
+  li t1, PAUSE
+  li t2, RUNNING
+  sw t2, 0(t1)
+
+  /*Put seed 0 on screen*/
+  jal set_seed
+  jal draw_gsa
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
@@ -779,6 +777,67 @@ reset_game:
 mask:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+
+  /*s1: line iterator*/
+  /*s2: mask id*/
+  /*s3: pixel iterator*/
+  lw s2, MASKS  /*Mask ID start address*/
+  li t1, SEED
+  lw t1, 0(t1)
+  beq t1, x0, .L_mask_idEnd
+.L_mask_id:
+  addi s2, s2, 40 /*Add offset to get good mask ID*/
+  addi t1, t1, -1
+  bne t1, x0, .L_mask_id
+.L_mask_idEnd:
+
+  /*Mask GSA*/
+  mv s1, x0     /*Line iterator*/
+.L_mask_gsaloop:
+  mv a0, s1
+  jal get_gsa     /*Load line*/
+  lw t1, 0(s2)
+  and a0, a0, t1  /*Mask line*/
+  mv a1, s1
+  jal set_gsa     /*Store line*/
+
+  addi s2, s2, 4  /*Calculate next line mask address*/
+  addi s1, s1, 1  /*Increase line iterator*/
+  li t1, N_GSA_LINES
+  bltu s1, t1, .L_mask_gsaloop /*Loop if line iterator < N_GSA_LINES*/
+  
+  /*Draw walls*/
+  addi s2, s2, -0x28  /*Calculate first line mask address*/
+  mv s1, x0     /*Line iterator*/
+.L_mask_maskloop:
+  mv s3, x0     /*Pixel iterator*/
+  lw t3, 0(s2)  /*Load line mask*/
+  li t1, 0xFFF 
+  xor t3, t3, t1 /*Invert mask*/
+.L_mask_innerloop:
+  srl t5, t3, s3
+  andi t5, t5, 1
+
+  /*Turn blue led on*/
+
+  li t4, 0        /*Clear register*/
+  slli t2, t5, 0    /*Bitshift collumn*/
+  or t4, t4, t2
+  slli t2, s1, 4    /*Bitshift row*/
+  or t4, t4, t2
+  li t2, 0x10400
+  or t4, t4, t2     /*Select turn on blue led*/
+  li t2, LEDS
+  sw t4, 0(t2)      /*Put t4 in LEDS register*/
+
+  addi s3, s3, 1  /*Increase line iterator*/
+  li t1, N_GSA_COLUMNS
+  bltu s3, t1, .L_mask_innerloop /*Loop if pixel iterator < N_GSA_COLUMNS*/
+
+  addi s2, s2, 4  /*Calculate next line mask address*/
+  addi s1, s1, 1  /*Increase line iterator*/
+  li t1, N_GSA_LINES
+  bltu s1, t1, .L_mask_maskloop /*Loop if line iterator < N_GSA_LINES*/
 
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
