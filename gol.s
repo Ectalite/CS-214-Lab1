@@ -62,6 +62,12 @@ main:
   li t2, CURR_STEP
   sw t1, 0(t2)
 
+  li t1, PAUSE
+  li t2, RUNNING
+  sw t2, 0(t1)
+
+  /*jal increment_seed*/
+
   /*Put seed 0 on screen*/
   jal set_seed
   jal draw_gsa
@@ -69,9 +75,9 @@ main:
   li s1, CURR_STATE
 .L_main:
 
-  li a0, 0
-  li a1, 6
-  jal find_neighbours
+  jal clear_leds
+  jal update_gsa
+  jal draw_gsa
 
   j .L_main
   # call reset_game
@@ -667,7 +673,71 @@ find_neighbours:
 update_gsa:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
+  add sp, sp, -4  /*PUSH s2*/
+  sw s2, 0(sp)
+  add sp, sp, -4  /*PUSH s3*/
+  sw s3, 0(sp)
+  add sp, sp, -4  /*PUSH s4*/
+  sw s4, 0(sp)
+  add sp, sp, -4  /*PUSH s5*/
+  sw s5, 0(sp)
 
+  li t1, PAUSE
+  lw t1, 0(t1)    /*Get game state*/
+  li t2, PAUSED
+  beq t1, t2, .L_update_gsa_end   /*If game is paused, then end function*/
+
+  /*s2 next GSA addr*/
+  /*s3 current x pos*/
+  /*s4 current y pos*/
+  /*s5 line to store into next GSA*/
+  li t1, GSA_ID   /*Get current GSA ID*/
+  lw t1, 0(t1)
+  beq t1, x0, .L_update_gsa_GETADDRzero  
+  li s2, GSA0
+  j .L_update_gsa_GETADDRend
+.L_update_gsa_GETADDRzero:
+  li s2, GSA1
+.L_update_gsa_GETADDRend:
+
+  mv s3, x0     /*Line iterator*/
+.L_update_gsa_exloop:
+  mv s4, x0       /*Pixel iterator*/
+  mv s5, x0
+.L_update_gsa_inloop:
+  mv a1, s3       /*Pixel y coordinate is line iterator value*/
+  mv a0, s4
+  jal find_neighbours
+  jal cell_fate
+  sll a0, a0, s4  /*Shift cell state to x position*/
+  or s5, s5, a0   /*Save cell state*/
+
+  addi s4, s4, 1  /*Increase pixel iterator*/
+  li t2, N_GSA_COLUMNS
+  bltu s4, t2, .L_update_gsa_inloop /*Loop if pixel iterator < N_GSA_COLUMNS*/
+
+  /*Store result into next GSA*/
+  sw s5, 0(s2)
+  addi s2, s2, 4 /*Go to next line in GSA*/
+
+  addi s3, s3, 1  /*Increase line iterator*/
+  li t2, N_GSA_LINES
+  bltu s3, t2, .L_update_gsa_exloop /*Loop if line iterator < N_GSA_LINES*/
+
+  li t1, GSA_ID   /*Change GSA ID*/
+  lw t2, 0(t1)  
+  xori t2, t2, 1
+  sw t2, 0(t1)
+
+.L_update_gsa_end:
+  lw s5, 0(sp)  /*POP s5*/
+  add sp, sp, 4
+  lw s4, 0(sp)  /*POP s4*/
+  add sp, sp, 4
+  lw s3, 0(sp)  /*POP s3*/
+  add sp, sp, 4
+  lw s2, 0(sp)  /*POP s2*/
+  add sp, sp, 4
   lw ra, 0(sp)  /*POP return adress*/
   add sp, sp, 4
   ret
