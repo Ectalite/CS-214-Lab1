@@ -52,6 +52,7 @@
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
   jal reset_game
+  jal increment_seed
 .L_main:
 
   jal update_state
@@ -813,26 +814,15 @@ mask:
   mv s3, x0     /*Pixel iterator*/
   lw t3, 0(s2)  /*Load line mask*/
   li t1, 0xFFF 
-  xor t3, t3, t1 /*Invert mask*/
-.L_mask_innerloop:
-  srl t5, t3, s3
-  andi t5, t5, 1
-
-  /*Turn blue led on*/
-
-  li t4, 0        /*Clear register*/
-  slli t2, t5, 0    /*Bitshift collumn*/
-  or t4, t4, t2
-  slli t2, s1, 4    /*Bitshift row*/
-  or t4, t4, t2
-  li t2, 0x10400
-  or t4, t4, t2     /*Select turn on blue led*/
+  xor t3, t3, t1    /*Invert mask*/
+  slli t4, t3, 16   /*Set line*/
+  slli t3, s1, 4    /*Set row*/
+  ori t4, t4, 0xF
+  or t4, t4, t3
+  li t3, 0x400
+  or t4, t4, t3     /*Set blue led*/
   li t2, LEDS
   sw t4, 0(t2)      /*Put t4 in LEDS register*/
-
-  addi s3, s3, 1  /*Increase line iterator*/
-  li t1, N_GSA_COLUMNS
-  bltu s3, t1, .L_mask_innerloop /*Loop if pixel iterator < N_GSA_COLUMNS*/
 
   addi s2, s2, 4  /*Calculate next line mask address*/
   addi s1, s1, 1  /*Increase line iterator*/
