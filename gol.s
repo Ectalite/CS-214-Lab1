@@ -53,12 +53,13 @@ main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
   jal reset_game
   jal increment_seed
+  jal increment_seed
 .L_main:
 
   jal update_state
   jal update_gsa
   jal clear_leds
-  jal mask
+  /*jal mask*/
   jal draw_gsa
   /*jal wait*/
 
@@ -125,9 +126,6 @@ wait:
 
 /* BEGIN:set_gsa */
 set_gsa:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-
   li t1, GSA_ID
   lw t1, 0(t1)    /*Load GSA number used*/
 
@@ -145,18 +143,12 @@ set_gsa:
 .L_set_gsa_l_zero:
 
   sw a0, 0(t2)   /*Store line at GSA adress offset by line*/
-
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
   ret
 
 /* END:set_gsa */
 
 /* BEGIN:get_gsa */
 get_gsa:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-
   li t1, GSA_ID
   lw t1, 0(t1)    /*Load GSA number used*/
 
@@ -174,9 +166,6 @@ get_gsa:
 .L_get_gsa_l_zero:
 
   lw a0, 0(t2)   /*Store line at GSA adress offset by line*/
-
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
   ret
 /* END:get_gsa */
 
@@ -527,8 +516,6 @@ select_action:
 
 /* BEGIN:cell_fate */
 cell_fate:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
   /*If cell dies or not (a0 number of neighbouring cells and a1 cell state)*/
   mv t2, a0 /*number of neighbouring cells*/
 
@@ -549,25 +536,18 @@ cell_fate:
 
 .L_cell_fate_end:
   /*a0 returns cell state (1 alive, 0 dead)*/
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
   ret
 /* END:cell_fate */
 
 /* BEGIN:find_neighbours */
 find_neighbours:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-  add sp, sp, -4  /*PUSH s1*/
-  sw s1, 0(sp)
-  add sp, sp, -4  /*PUSH s2*/
-  sw s2, 0(sp)
-  add sp, sp, -4  /*PUSH s3*/
-  sw s3, 0(sp)
-  add sp, sp, -4  /*PUSH s4*/
-  sw s4, 0(sp)
-  add sp, sp, -4  /*PUSH s5*/
-  sw s5, 0(sp)
+  sw ra, -4(sp)     /*PUSH return adress*/
+  sw s1, -8(sp)     /*PUSH s1*/
+  sw s2, -12(sp)    /*PUSH s2*/
+  sw s3, -16(sp)    /*PUSH s3*/
+  sw s4, -20(sp)    /*PUSH s4*/
+  sw s5, -24(sp)    /*PUSH s5*/
+  add sp, sp, -24   /*Update stack pointer*/
 
   /*a0: cell x coordinate | a1: cell y coordinate*/
   mv s1, x0 /*Neighbours counter*/
@@ -637,33 +617,25 @@ find_neighbours:
   andi a1, a1, 1
   mv a0, s1       /*a0: Count of neighbours*/
 
-  lw s5, 0(sp)  /*POP s5*/
-  add sp, sp, 4
-  lw s4, 0(sp)  /*POP s4*/
-  add sp, sp, 4
-  lw s3, 0(sp)  /*POP s3*/
-  add sp, sp, 4
-  lw s2, 0(sp)  /*POP s2*/
-  add sp, sp, 4
-  lw s1, 0(sp)  /*POP s1*/
-  add sp, sp, 4
-  lw ra, 0(sp)   /*POP return adress*/
-  add sp, sp, 4
+  lw s5, 0(sp)    /*POP s5*/
+  lw s4, 4(sp)    /*POP s4*/
+  lw s3, 8(sp)    /*POP s3*/
+  lw s2, 12(sp)   /*POP s2*/
+  lw s1, 16(sp)   /*POP s1*/
+  lw ra, 20(sp)   /*POP return address*/
+  addi sp, sp, 24
   ret
 /* END:find_neighbours */
 
 /* BEGIN:update_gsa */
 update_gsa:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-  add sp, sp, -4  /*PUSH s2*/
-  sw s2, 0(sp)
-  add sp, sp, -4  /*PUSH s3*/
-  sw s3, 0(sp)
-  add sp, sp, -4  /*PUSH s4*/
-  sw s4, 0(sp)
-  add sp, sp, -4  /*PUSH s5*/
-  sw s5, 0(sp)
+  sw ra, -4(sp)     /*PUSH return adress*/
+  sw s1, -8(sp)     /*PUSH s1*/
+  sw s2, -12(sp)    /*PUSH s2*/
+  sw s3, -16(sp)    /*PUSH s3*/
+  sw s4, -20(sp)    /*PUSH s4*/
+  sw s5, -24(sp)    /*PUSH s5*/
+  add sp, sp, -24   /*Update stack pointer*/
 
   li t1, PAUSE
   lw t1, 0(t1)    /*Get game state*/
@@ -713,16 +685,13 @@ update_gsa:
   sw t2, 0(t1)
 
 .L_update_gsa_end:
-  lw s5, 0(sp)  /*POP s5*/
-  add sp, sp, 4
-  lw s4, 0(sp)  /*POP s4*/
-  add sp, sp, 4
-  lw s3, 0(sp)  /*POP s3*/
-  add sp, sp, 4
-  lw s2, 0(sp)  /*POP s2*/
-  add sp, sp, 4
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
+  lw s5, 0(sp)    /*POP s5*/
+  lw s4, 4(sp)    /*POP s4*/
+  lw s3, 8(sp)    /*POP s3*/
+  lw s2, 12(sp)   /*POP s2*/
+  lw s1, 16(sp)   /*POP s1*/
+  lw ra, 20(sp)   /*POP return address*/
+  addi sp, sp, 24
   ret
 /* END:update_gsa */
 
