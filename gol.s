@@ -696,11 +696,9 @@ update_gsa:
 
 /* BEGIN:get_input */
 get_input:
-
   li t1, BUTTONS
   lw a0, 0(t1)    /*Get buttons status*/
   sw x0, 0(t1)    /*Reset register*/
-
   ret
 /* END:get_input */
 
@@ -807,8 +805,11 @@ reset_game:
 
 /* BEGIN:mask */
 mask:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
+  sw ra, -4(sp)     /*PUSH return adress*/
+  sw s1, -8(sp)     /*PUSH s1*/
+  sw s2, -12(sp)    /*PUSH s2*/
+  sw s3, -16(sp)    /*PUSH s3*/
+  add sp, sp, -16   /*Update stack pointer*/
 
   /*s1: line iterator*/
   /*s2: mask id*/
@@ -860,8 +861,11 @@ mask:
   li t1, N_GSA_LINES
   bltu s1, t1, .L_mask_maskloop /*Loop if line iterator < N_GSA_LINES*/
 
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
+  lw s3, 0(sp)    /*POP s3*/
+  lw s2, 4(sp)    /*POP s2*/
+  lw s1, 8(sp)    /*POP s1*/
+  lw ra, 12(sp)   /*POP return address*/
+  addi sp, sp, 16
   ret
 /* END:mask */
 
