@@ -52,18 +52,23 @@
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
   jal reset_game
-.L_main:
+  jal get_input
+  mv s1, x0             /*Done variable*/
 
-  jal decrement_step
-  /*jal update_state
+.L_main_loop:
+  jal select_action
+  jal update_state
   jal update_gsa
-  jal clear_leds
   jal mask
-  jal draw_gsa*/
-  /*jal wait*/
+  jal draw_gsa
+  jal wait
+  jal decrement_step
+  mv s1, a0
+  jal get_input
 
-  j .L_main
-  # call reset_game
+  beqz s1, .L_main_loop /*If not done then loop to L_main*/
+
+  j main        /*Infinite loop*/
 
 /* BEGIN:clear_leds */
 clear_leds:
@@ -170,14 +175,13 @@ get_gsa:
 
 /* BEGIN:draw_gsa */
 draw_gsa:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-  add sp, sp, -4  /*PUSH s1*/
-  sw s1, 0(sp)
-  add sp, sp, -4  /*PUSH s2*/
-  sw s2, 0(sp)
-  add sp, sp, -4  /*PUSH s3*/
-  sw s3, 0(sp)
+  sw ra, -4(sp)     /*PUSH return adress*/
+  sw s1, -8(sp)     /*PUSH s1*/
+  sw s2, -12(sp)    /*PUSH s2*/
+  sw s3, -16(sp)    /*PUSH s3*/
+  add sp, sp, -16   /*Update stack pointer*/
+
+  jal clear_leds  /*Clear everything*/
 
   mv s1, x0       /*Line iterator*/
 .L_draw_gsa_exloop:
@@ -205,14 +209,11 @@ draw_gsa:
   li t2, N_GSA_LINES
   bltu s1, t2, .L_draw_gsa_exloop /*Loop if line iterator < N_GSA_LINES*/
 
-  lw s3, 0(sp)  /*POP s3*/
-  add sp, sp, 4
-  lw s2, 0(sp)  /*POP s2*/
-  add sp, sp, 4
-  lw s1, 0(sp)  /*POP s1*/
-  add sp, sp, 4
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
+  lw s3, 0(sp)    /*POP s3*/
+  lw s2, 4(sp)    /*POP s2*/
+  lw s1, 8(sp)    /*POP s1*/
+  lw ra, 12(sp)   /*POP return address*/
+  addi sp, sp, 16
   ret
 /* END:draw_gsa */
 
@@ -488,7 +489,7 @@ select_action:
   li t1, JB
   and t2, a0, t1
   beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
-  j reset_game /*We don't need to return from reset*/
+  jal reset_game    /*We don't need to return from reset*/
 
 .L_select_action_endJB:
 
