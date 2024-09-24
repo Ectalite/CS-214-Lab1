@@ -457,6 +457,9 @@ update_state:
   beq t2, x0, .L_update_state_endJR /*If JR is not pressed then jump to endJR*/
   li t1, RUN
   sw t1, 0(t3)  /*Update game state to RUN*/
+  li t1, RUNNING
+  li t2, PAUSE
+  sw t1, 0(t2)  /*Unpause game*/
 
 .L_update_state_endJR:
   ret
@@ -480,7 +483,7 @@ select_action:
   beq t2, x0, .L_select_action_endJR_JL /*If JR or JL is not pressed then jump to endJR_JL*/
   li t1, CURR_STATE
   lw t1, 0(t1)
-  li t2, RUNNING
+  li t2, RUN
   bne t1, t2, .L_select_action_endJR_JL
   jal change_speed
 
@@ -748,7 +751,7 @@ decrement_step:
   mv a0, x0         /*Init a0 to 0*/
   li t2, CURR_STATE /*Get current game state*/
   lw t2, 0(t2)
-  li t3, RUNNING
+  li t3, RUN
   bne t2, t3, .L_decrement_step_end /*Jump if state is not running*/
 
   bnez t1, .L_decrement_step_add    /*If step is bigger than zero sub 1*/
