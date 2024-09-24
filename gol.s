@@ -52,12 +52,6 @@
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
   jal reset_game
-  li t1, 0x0010
-  li t2, CURR_STEP
-  sw t1, 0(t2)
-  li t1, CURR_STATE
-  li t2, RUNNING
-  sw t2, 0(t1)
 .L_main:
 
   jal decrement_step
@@ -712,7 +706,6 @@ get_input:
 
 /* BEGIN:decrement_step */
 decrement_step:
-
   la t0, font_data    /*Get font base address*/
   la t1, CURR_STEP    /*Get current step and isolate each digit*/
   lw t1, 0(t1)
@@ -772,22 +765,39 @@ reset_game:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
-  /*Set game speed*/
-  li t1, 10        
-  li t2, SPEED
-  sw t1, 0(t2)
-
   /*Start with current step to 1*/
   li t1, 1
   li t2, CURR_STEP
   sw t1, 0(t2)
 
-  li t1, PAUSE
-  li t2, RUNNING
-  sw t2, 0(t1)
+  /*Start with game state to init*/
+  li t1, INIT
+  li t2, CURR_STATE
+  sw t1, 0(t2)
 
-  /*Put seed 0 on screen*/
-  jal set_seed
+  /*Start with seed to zero*/
+  mv t1, x0
+  li t2, SEED
+  sw t1, 0(t2)
+
+  /*Start with GSA_ID set to zero*/
+  li t1, GSA0
+  li t2, GSA_ID
+  sw t1, 0(t2)
+
+  /*Start with game paused*/
+  li t1, PAUSED
+  li t2, PAUSE
+  sw t1, 0(t2)
+
+  /*Set game speed*/
+  li t1, 1        
+  li t2, SPEED
+  sw t1, 0(t2)
+
+  /*Make function calls after initializing configuration*/
+  jal decrement_step    /*Initialize seven seg*/
+  jal set_seed        /*Put seed 0 on screen*/
   jal draw_gsa
 
   lw ra, 0(sp)  /*POP return adress*/
