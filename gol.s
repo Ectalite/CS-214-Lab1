@@ -52,15 +52,20 @@
 main:
   li sp, CUSTOM_VAR_END /* Set stack pointer, grows downwards */
   jal reset_game
-  jal increment_seed
-  jal increment_seed
+  li t1, 0x0010
+  li t2, CURR_STEP
+  sw t1, 0(t2)
+  li t1, CURR_STATE
+  li t2, RUNNING
+  sw t2, 0(t1)
 .L_main:
 
-  jal update_state
+  jal decrement_step
+  /*jal update_state
   jal update_gsa
   jal clear_leds
-  /*jal mask*/
-  jal draw_gsa
+  jal mask
+  jal draw_gsa*/
   /*jal wait*/
 
   j .L_main
@@ -707,11 +712,58 @@ get_input:
 
 /* BEGIN:decrement_step */
 decrement_step:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
 
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
+  la t0, font_data    /*Get font base address*/
+  la t1, CURR_STEP    /*Get current step and isolate each digit*/
+  lw t1, 0(t1)
+      
+  andi t3, t1, 0xF
+  slli t3, t3, 2
+  add t3, t3, t0
+  lw t2, 0(t3)      /*Add first number to seven_segs*/
+
+  srli t3, t1, 4
+  andi t3, t3, 0xF
+  slli t3, t3, 2
+  add t3, t3, t0
+  lw t3, 0(t3) 
+  slli t3, t3, 8
+  or t2, t2, t3     /*Add second number to seven_segs*/
+
+  srli t3, t1, 8
+  andi t3, t3, 0xF
+  slli t3, t3, 2
+  add t3, t3, t0
+  lw t3, 0(t3) 
+  slli t3, t3, 16
+  or t2, t2, t3     /*Add third number to seven_segs*/
+
+  srli t3, t1, 12
+  andi t3, t3, 0xF
+  slli t3, t3, 2
+  add t3, t3, t0
+  lw t3, 0(t3) 
+  slli t3, t3, 24
+  or t2, t2, t3     /*Add forth number to seven_segs*/
+
+  li t3, SEVEN_SEGS /*Store into seven segs register*/
+  sw t2, 0(t3)
+
+  mv a0, x0         /*Init a0 to 0*/
+  li t2, CURR_STATE /*Get current game state*/
+  lw t2, 0(t2)
+  li t3, RUNNING
+  bne t2, t3, .L_decrement_step_end /*Jump if state is not running*/
+
+  bnez t1, .L_decrement_step_add    /*If step is bigger than zero sub 1*/
+  li a0, 1                          /*If step equals zero then return 1*/
+  j .L_decrement_step_end
+
+.L_decrement_step_add:
+  addi t1, t1, -1
+  la t2, CURR_STEP
+  sw t1, 0(t2)
+.L_decrement_step_end:
   ret
 /* END:decrement_step */
 
