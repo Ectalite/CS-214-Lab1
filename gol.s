@@ -697,11 +697,11 @@ update_gsa:
 
 /* BEGIN:get_input */
 get_input:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
 
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
+  li t1, BUTTONS
+  lw a0, 0(t1)    /*Get buttons status*/
+  sw x0, 0(t1)    /*Reset register*/
+
   ret
 /* END:get_input */
 
