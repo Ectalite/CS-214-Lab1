@@ -473,7 +473,17 @@ select_action:
   li t1, JC
   and t2, a0, t1
   beq t2, x0, .L_select_action_endJC /*If JC is not pressed then jump to endJC*/
+  li t1, CURR_STATE
+  lw t1, 0(t1)
+  li t2, RUN
+  beq t1, t2, .L_select_action_JCpause
   jal increment_seed
+  j .L_select_action_endJC
+.L_select_action_JCpause:
+  li t1, PAUSED
+  lw t2, 0(t1)
+  xori t2, t2, 0x1
+  sw t2, 0(t1)  /*Inverse pause status*/ 
 
 .L_select_action_endJC:
 
@@ -499,6 +509,10 @@ select_action:
   li t1, JT
   and t2, a0, t1
   beq t2, x0, .L_select_action_endJT /*If JT is not pressed then jump to endJT*/
+  li t1, CURR_STATE
+  lw t1, 0(t1)
+  li t2, RUN
+  bne t1, t2, .L_select_action_endJT
   jal random_gsa
 
 .L_select_action_endJT:
