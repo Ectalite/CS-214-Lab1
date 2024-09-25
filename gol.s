@@ -733,9 +733,26 @@ get_input:
 
 /* BEGIN:decrement_step */
 decrement_step:
-  la t0, font_data    /*Get font base address*/
   la t1, CURR_STEP    /*Get current step and isolate each digit*/
   lw t1, 0(t1)
+
+  mv a0, x0         /*Init a0 to 0*/
+  li t2, CURR_STATE /*Get current game state*/
+  lw t2, 0(t2)
+  li t3, RUN
+  bne t2, t3, .L_decrement_step_end /*Jump if state is not running*/
+
+  bnez t1, .L_decrement_step_add    /*If step is bigger than zero sub 1*/
+  li a0, 1                          /*If step equals zero then return 1*/
+  j .L_decrement_step_end
+
+.L_decrement_step_add:
+  addi t1, t1, -1
+  la t2, CURR_STEP
+  sw t1, 0(t2)
+.L_decrement_step_end:
+
+  la t0, font_data    /*Get font base address*/
       
   andi t3, t1, 0xF
   slli t3, t3, 2
@@ -768,22 +785,6 @@ decrement_step:
 
   li t3, SEVEN_SEGS /*Store into seven segs register*/
   sw t2, 0(t3)
-
-  mv a0, x0         /*Init a0 to 0*/
-  li t2, CURR_STATE /*Get current game state*/
-  lw t2, 0(t2)
-  li t3, RUN
-  bne t2, t3, .L_decrement_step_end /*Jump if state is not running*/
-
-  bnez t1, .L_decrement_step_add    /*If step is bigger than zero sub 1*/
-  li a0, 1                          /*If step equals zero then return 1*/
-  j .L_decrement_step_end
-
-.L_decrement_step_add:
-  addi t1, t1, -1
-  la t2, CURR_STEP
-  sw t1, 0(t2)
-.L_decrement_step_end:
   ret
 /* END:decrement_step */
 
