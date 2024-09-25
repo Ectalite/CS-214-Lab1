@@ -808,7 +808,7 @@ reset_game:
   sw t1, 0(t2)
 
   /*Start with GSA_ID set to zero*/
-  li t1, GSA0
+  li t1, 0
   li t2, GSA_ID
   sw t1, 0(t2)
 
