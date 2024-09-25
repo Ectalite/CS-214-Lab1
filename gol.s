@@ -290,16 +290,10 @@ change_speed:
 
 /* BEGIN:pause_game */
 pause_game:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-
   li t1, PAUSE
   lw t2, 0(t1)
   xori t2, t2, 1  /*XOR gives us the inverse each time*/
   sw t2, 0(t1)
-
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
   ret
 /* END:pause_game */
 
@@ -481,10 +475,7 @@ select_action:
   jal increment_seed
   j .L_select_action_endJC
 .L_select_action_JCpause:
-  li t1, PAUSED
-  lw t2, 0(t1)
-  xori t2, t2, 0x1
-  sw t2, 0(t1)  /*Inverse pause status*/ 
+  jal pause_game
 
 .L_select_action_endJC:
 
