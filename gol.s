@@ -267,9 +267,6 @@ random_gsa:
 
 /* BEGIN:change_speed */
 change_speed:
-  add sp, sp, -4  /*PUSH return adress*/
-  sw ra, 0(sp)
-
   li t2, SPEED
   lw t3, 0(t2)
 
@@ -288,9 +285,6 @@ change_speed:
 
 .L_change_speed_end:
   sw t3, 0(t2)    /*Save speed*/
-
-  lw ra, 0(sp)  /*POP return adress*/
-  add sp, sp, 4
   ret
 /* END:change_speed */
 
