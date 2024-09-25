@@ -727,6 +727,11 @@ decrement_step:
   li t3, RUN
   bne t2, t3, .L_decrement_step_end /*Jump if state is not running*/
 
+  li t2, PAUSE
+  lw t2, 0(t2)
+  li t3, PAUSED
+  beq t2, t3, .L_decrement_step_end /*Jump if game is paused*/
+
   bnez t1, .L_decrement_step_add    /*If step is bigger than zero sub 1*/
   li a0, 1                          /*If step equals zero then return 1*/
   j .L_decrement_step_end
