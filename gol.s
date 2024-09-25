@@ -54,17 +54,21 @@ main:
   jal reset_game
   jal get_input
   mv s1, x0             /*Done variable*/
+  mv s2, a0             /*e variable*/
 
 .L_main_loop:
   jal select_action
+  mv a0, s2             /*Give proper e to update_state*/
   jal update_state
   jal update_gsa
+  jal clear_leds
   jal mask
   jal draw_gsa
   jal wait
   jal decrement_step
   mv s1, a0
   jal get_input
+  mv s2, a0
 
   beqz s1, .L_main_loop /*If not done then loop to L_main*/
 
@@ -181,7 +185,7 @@ draw_gsa:
   sw s3, -16(sp)    /*PUSH s3*/
   add sp, sp, -16   /*Update stack pointer*/
 
-  jal clear_leds  /*Clear everything*/
+  /*jal clear_leds*/  /*Clear everything*/
 
   mv s1, x0       /*Line iterator*/
 .L_draw_gsa_exloop:
@@ -470,8 +474,11 @@ select_action:
   add sp, sp, -4  /*PUSH return adress*/
   sw ra, 0(sp)
 
+  /*s1: buttons pressed*/
+  mv s1, a0
+
   li t1, JC
-  and t2, a0, t1
+  and t2, s1, t1
   beq t2, x0, .L_select_action_endJC /*If JC is not pressed then jump to endJC*/
   li t1, CURR_STATE
   lw t1, 0(t1)
@@ -489,7 +496,7 @@ select_action:
 
   li t1, JR
   ori t1, t1, JL
-  and t2, a0, t1
+  and t2, s1, t1
   beq t2, x0, .L_select_action_endJR_JL /*If JR or JL is not pressed then jump to endJR_JL*/
   li t1, CURR_STATE
   lw t1, 0(t1)
@@ -500,14 +507,14 @@ select_action:
 .L_select_action_endJR_JL:
 
   li t1, JB
-  and t2, a0, t1
+  and t2, s1, t1
   beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
   jal reset_game    /*We don't need to return from reset*/
 
 .L_select_action_endJB:
 
   li t1, JT
-  and t2, a0, t1
+  and t2, s1, t1
   beq t2, x0, .L_select_action_endJT /*If JT is not pressed then jump to endJT*/
   li t1, CURR_STATE
   lw t1, 0(t1)
@@ -520,9 +527,9 @@ select_action:
   li t1, BUTTON_0
   ori t1, t1, BUTTON_1
   ori t1, t1, BUTTON_2
-  and t2, a0, t1
+  and t2, s1, t1
   beq t2, x0, .L_select_action_0_1_2 /*If 0, 1 or 2 is not pressed then jump to 0_1_2*/
-  mv t1, a0
+  mv t1, s1
   andi a0, t1, BUTTON_0
   andi a1, t1, BUTTON_1
   andi a2, t1, BUTTON_2
