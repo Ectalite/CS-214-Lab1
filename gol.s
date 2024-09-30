@@ -421,6 +421,8 @@ increment_seed:
 
 /* BEGIN:update_state */
 update_state:
+  add sp, sp, -4  /*PUSH return adress*/
+  sw ra, 0(sp)
 
   li t3, CURR_STATE 
   
@@ -454,6 +456,15 @@ update_state:
   sw t1, 0(t2)  /*Unpause game*/
 
 .L_update_state_endJR:
+
+  li t1, JB
+  and t2, s1, t1
+  beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
+  jal reset_game    /*We don't need to return from reset*/
+
+.L_select_action_endJB:
+  lw ra, 0(sp)  /*POP return adress*/
+  add sp, sp, 4
   ret
 /* END:update_state */
 
@@ -490,13 +501,6 @@ select_action:
   jal change_speed
 
 .L_select_action_endJR_JL:
-
-  li t1, JB
-  and t2, s1, t1
-  beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
-  jal reset_game    /*We don't need to return from reset*/
-
-.L_select_action_endJB:
 
   li t1, JT
   and t2, s1, t1
