@@ -76,21 +76,21 @@ main:
 
 /* BEGIN:clear_leds */
 clear_leds:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   li t1, 0x007FF /*Clear all leds*/
   li t3, LEDS
   sw t1, 0(t3)  /*Put clear led in LEDS register*/
   
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:clear_leds */
 
 /* BEGIN:set_pixel */
 set_pixel:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   li t1, 0        /*Clear register*/
@@ -103,14 +103,14 @@ set_pixel:
   li t2, LEDS
   sw t1, 0(t2)      /*Put t1 in LEDS register*/
   
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:set_pixel */
 
 /* BEGIN:wait */
 wait:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   li t1, 1          /*Load value for */
@@ -127,7 +127,7 @@ wait:
   sub t1, t1, t2    /*Substract loop counter*/
   bge t1, x0, .L_wait /*Go back if not 0*/
 
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret               /*Return after wait is ended*/
 /* END:wait */
@@ -138,19 +138,19 @@ set_gsa:
   lw t1, 0(t1)    /*Load GSA number used*/
 
   bne t1, x0, .L_set_gsa_one /*Jump if GSA_ID one*/
-  li t2, GSA0     /*Get GSA0 adress*/
+  li t2, GSA0     /*Get GSA0 address*/
   j .L_set_gsa_mul
 .L_set_gsa_one:
-  li t2, GSA1     /*Get GSA1 adress*/
+  li t2, GSA1     /*Get GSA1 address*/
 
 .L_set_gsa_mul:
   beq a1, x0, .L_set_gsa_l_zero /*Do not add offset if line is 0*/
-  addi t2, t2, 4  /*Calculate GSA line store adress offset*/
+  addi t2, t2, 4  /*Calculate GSA line store address offset*/
   addi a1, a1, -1
   blt x0, a1, .L_set_gsa_mul
 .L_set_gsa_l_zero:
 
-  sw a0, 0(t2)   /*Store line at GSA adress offset by line*/
+  sw a0, 0(t2)   /*Store line at GSA address offset by line*/
   ret
 
 /* END:set_gsa */
@@ -161,25 +161,25 @@ get_gsa:
   lw t1, 0(t1)    /*Load GSA number used*/
 
   bne t1, x0, .L_get_gsa_one /*Jump if GSA_ID one*/
-  li t2, GSA0     /*Get GSA0 adress*/
+  li t2, GSA0     /*Get GSA0 address*/
   j .L_get_gsa_mul
 .L_get_gsa_one:
-  li t2, GSA1     /*Get GSA1 adress*/
+  li t2, GSA1     /*Get GSA1 address*/
 
 .L_get_gsa_mul:
   beq a0, x0, .L_get_gsa_l_zero /*Do not add offset if line is 0*/
-  addi t2, t2, 4  /*Calculate GSA line store adress offset*/
+  addi t2, t2, 4  /*Calculate GSA line store address offset*/
   addi a0, a0, -1
   blt x0, a0, .L_get_gsa_mul
 .L_get_gsa_l_zero:
 
-  lw a0, 0(t2)   /*Store line at GSA adress offset by line*/
+  lw a0, 0(t2)   /*Store line at GSA address offset by line*/
   ret
 /* END:get_gsa */
 
 /* BEGIN:draw_gsa */
 draw_gsa:
-  sw ra, -4(sp)     /*PUSH return adress*/
+  sw ra, -4(sp)     /*PUSH return address*/
   sw s1, -8(sp)     /*PUSH s1*/
   sw s2, -12(sp)    /*PUSH s2*/
   sw s3, -16(sp)    /*PUSH s3*/
@@ -223,7 +223,7 @@ draw_gsa:
 
 /* BEGIN:random_gsa */
 random_gsa:   
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
   add sp, sp, -4  /*PUSH s1*/
   sw s1, 0(sp)
@@ -260,7 +260,7 @@ random_gsa:
   add sp, sp, 4
   lw s1, 0(sp)  /*POP s1*/
   add sp, sp, 4
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret        
 /* END:random_gsa */
@@ -299,7 +299,7 @@ pause_game:
 
 /* BEGIN:change_steps */
 change_steps:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   li t1, CURR_STEP
@@ -319,14 +319,14 @@ change_steps:
 
   sw t2, 0(t1)    /*Store value of current steps*/
 
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:change_steps */
 
 /* BEGIN:set_seed */
 set_seed:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
   add sp, sp, -4  /*PUSH s1*/
   sw s1, 0(sp)
@@ -335,12 +335,12 @@ set_seed:
 
   li t1, SEED     /*Get current seed id*/
   lw t2, 0(t1)
-  lw s1, SEEDS    /*Get SEEDS base adress*/
+  lw s1, SEEDS    /*Get SEEDS base address*/
   beq t2, x0, .L_set_seed_SEEDzero
 .L_set_seed_SEEDoffset:
   addi s1, s1, 40
   addi t2, t2, -1
-  bne t2, x0, .L_set_seed_SEEDoffset /*Calculate adress offset for the good seed*/
+  bne t2, x0, .L_set_seed_SEEDoffset /*Calculate address offset for the good seed*/
 .L_set_seed_SEEDzero:
   mv s2, x0       /*Line iterator*/
 .L_set_seed_loop:
@@ -358,14 +358,14 @@ set_seed:
   add sp, sp, 4
   lw s1, 0(sp)  /*POP s1*/
   add sp, sp, 4
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:set_seed */
 
 /* BEGIN:increment_seed */
 increment_seed:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
   add sp, sp, -4  /*PUSH s1*/
   sw s1, 0(sp)
@@ -384,11 +384,11 @@ increment_seed:
   sw t2, 0(t1)    /*Increase and save seed ID*/
 
   /*Copy seed in GSA*/
-  lw s1, SEEDS    /*Get SEEDS base adress*/
+  lw s1, SEEDS    /*Get SEEDS base address*/
 .L_increment_seed_SEEDoffset:
   addi s1, s1, 40
   addi t2, t2, -1
-  bne t2, x0, .L_increment_seed_SEEDoffset /*Calculate adress offset for the good seed*/
+  bne t2, x0, .L_increment_seed_SEEDoffset /*Calculate address offset for the good seed*/
 
   mv s2, x0       /*Line iterator*/
 .L_increment_seed_loop:
@@ -414,14 +414,14 @@ increment_seed:
   add sp, sp, 4
   lw s1, 0(sp)  /*POP s1*/
   add sp, sp, 4
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret               
 /* END:increment_seed */
 
 /* BEGIN:update_state */
 update_state:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   li t3, CURR_STATE 
@@ -472,14 +472,14 @@ update_state:
   jal reset_game    /*We don't need to return from reset*/
 
 .L_select_action_endJB:
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:update_state */
 
 /* BEGIN:select_action */
 select_action:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   /*s1: buttons pressed*/
@@ -535,7 +535,7 @@ select_action:
 
 .L_select_action_0_1_2:
 
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:select_action */
@@ -567,7 +567,7 @@ cell_fate:
 
 /* BEGIN:find_neighbours */
 find_neighbours:
-  sw ra, -4(sp)     /*PUSH return adress*/
+  sw ra, -4(sp)     /*PUSH return address*/
   sw s1, -8(sp)     /*PUSH s1*/
   sw s2, -12(sp)    /*PUSH s2*/
   sw s3, -16(sp)    /*PUSH s3*/
@@ -655,7 +655,7 @@ find_neighbours:
 
 /* BEGIN:update_gsa */
 update_gsa:
-  sw ra, -4(sp)     /*PUSH return adress*/
+  sw ra, -4(sp)     /*PUSH return address*/
   sw s1, -8(sp)     /*PUSH s1*/
   sw s2, -12(sp)    /*PUSH s2*/
   sw s3, -16(sp)    /*PUSH s3*/
@@ -793,7 +793,7 @@ decrement_step:
 
 /* BEGIN:reset_game */
 reset_game:
-  add sp, sp, -4  /*PUSH return adress*/
+  add sp, sp, -4  /*PUSH return address*/
   sw ra, 0(sp)
 
   /*Start with current step to 1*/
@@ -831,14 +831,14 @@ reset_game:
   jal set_seed        /*Put seed 0 on screen*/
   jal draw_gsa
 
-  lw ra, 0(sp)  /*POP return adress*/
+  lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
 /* END:reset_game */
 
 /* BEGIN:mask */
 mask:
-  sw ra, -4(sp)     /*PUSH return adress*/
+  sw ra, -4(sp)     /*PUSH return address*/
   sw s1, -8(sp)     /*PUSH s1*/
   sw s2, -12(sp)    /*PUSH s2*/
   sw s3, -16(sp)    /*PUSH s3*/
