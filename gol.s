@@ -458,20 +458,16 @@ update_state:
 .L_update_state_endJR:
 
   lw t2, 0(t3)  /*Get current state value*/
-  li t1, INIT
-  xor t1, t1, t2
-  bne t1, x0, .L_select_action_endJB /*Do not reset if game is in INIT*/
-
-  li t1, RAND
+  li t1, RUN
   and t1, t1, t2
-  beq t1, x0, .L_select_action_endJB /*Do not reset if game is in RAND*/
+  beq t1, x0, .L_update_state_endJB /*Only reset if state is RUN*/
 
   li t1, JB
   and t2, s1, t1
-  beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
+  beq t2, x0, .L_update_state_endJB /*If JB is not pressed then jump to endJB*/
   jal reset_game    /*We don't need to return from reset*/
 
-.L_select_action_endJB:
+.L_update_state_endJB:
   lw ra, 0(sp)  /*POP return address*/
   add sp, sp, 4
   ret
