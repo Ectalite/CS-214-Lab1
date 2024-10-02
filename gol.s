@@ -457,6 +457,15 @@ update_state:
 
 .L_update_state_endJR:
 
+  lw t2, 0(t3)  /*Get current state value*/
+  li t1, INIT
+  xor t1, t1, t2
+  bne t1, x0, .L_select_action_endJB /*Do not reset if game is in INIT*/
+
+  li t1, RAND
+  and t1, t1, t2
+  beq t1, x0, .L_select_action_endJB /*Do not reset if game is in RAND*/
+
   li t1, JB
   and t2, s1, t1
   beq t2, x0, .L_select_action_endJB /*If JB is not pressed then jump to endJB*/
