@@ -486,14 +486,29 @@ select_action:
 
 .L_select_action_endJC:
 
+  li t1, CURR_STATE
+  lw t1, 0(t1)
+  li t2, RUN
+  bne t1, t2, .L_select_action_endJR_JL /*Only change speed if state is RUN*/
+
   li t1, JR
   ori t1, t1, JL
   and t2, s1, t1
   beq t2, x0, .L_select_action_endJR_JL /*If JR or JL is not pressed then jump to endJR_JL*/
-  li t1, CURR_STATE
-  lw t1, 0(t1)
-  li t2, RUN
-  bne t1, t2, .L_select_action_endJR_JL
+
+  li t1, JR
+  and t2, s1, t1
+  beq t2, x0, .L_select_action_endJR   /*If JR is not pressed then jump to endJR*/
+
+  li a0, 0  /*Decrement*/
+  jal change_speed
+
+.L_select_action_endJR:
+
+  li t1, JL
+  and t2, s1, t1
+  beq t2, x0, .L_select_action_endJR_JL   /*If JL is not pressed then jump to endJR_JL*/
+  li a0, 1  /*Increment*/
   jal change_speed
 
 .L_select_action_endJR_JL:
@@ -521,8 +536,11 @@ select_action:
   beq t2, x0, .L_select_action_0_1_2 /*If 0, 1 or 2 is not pressed then jump to 0_1_2*/
   mv t1, s1
   andi a0, t1, BUTTON_0
+  srli a0, a0, 6
   andi a1, t1, BUTTON_1
+  srli a1, a1, 5
   andi a2, t1, BUTTON_2
+  srli a2, a2, 7
   jal change_steps
 
 .L_select_action_0_1_2:
