@@ -187,31 +187,22 @@ draw_gsa:
 
   /*jal clear_leds*/  /*Clear everything*/
 
-  mv s1, x0       /*Line iterator*/
-.L_draw_gsa_exloop:
+  mv s1, x0     /*Line iterator*/
+.L_draw_gsa_loop:
   mv a0, s1
-  jal get_gsa
-  mv s2, x0       /*Pixel iterator*/
-  mv s3, a0       /*Store line value in s3*/
-  mv a1, s1       /*Pixel y coordinate is line iterator value*/
-
-.L_draw_gsa_inloop:
-  li t1, 1  
-  sll t1, t1, s2  /*Used to select bit to show on pixel matrix*/
-  and t2, t1, s3  /*Get value of pixel to draw*/
-
-  beq t2, x0, .L_draw_gsa_notOn   /*If pixel is zero, then jump to notOn*/
-  mv a0, s2       /*Pixel x coordinate is pixel iterator value*/
-  jal set_pixel
-
-.L_draw_gsa_notOn:
-  addi s2, s2, 1  /*Increase pixel iterator*/
-  li t2, N_GSA_COLUMNS
-  bltu s2, t2, .L_draw_gsa_inloop /*Loop if pixel iterator < N_GSA_COLUMNS*/
+  jal get_gsa  /*Load line from GSA*/
+  slli t4, a0, 16   /*Set line*/
+  slli t3, s1, 4    /*Set row*/
+  ori t4, t4, 0xF
+  or t4, t4, t3
+  li t3, RED
+  or t4, t4, t3     /*Set red led*/
+  li t2, LEDS
+  sw t4, 0(t2)      /*Put t4 in LEDS register*/
 
   addi s1, s1, 1  /*Increase line iterator*/
-  li t2, N_GSA_LINES
-  bltu s1, t2, .L_draw_gsa_exloop /*Loop if line iterator < N_GSA_LINES*/
+  li t1, N_GSA_LINES
+  bltu s1, t1, .L_draw_gsa_loop /*Loop if line iterator < N_GSA_LINES*/
 
   lw s3, 0(sp)    /*POP s3*/
   lw s2, 4(sp)    /*POP s2*/
