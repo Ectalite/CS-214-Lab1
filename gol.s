@@ -463,7 +463,7 @@ update_state:
   beq t1, x0, .L_update_state_endJB /*Only reset if state is RUN*/
 
   li t1, JB
-  and t2, s1, t1
+  and t2, a0, t1
   beq t2, x0, .L_update_state_endJB /*If JB is not pressed then jump to endJB*/
   jal reset_game    /*We don't need to return from reset*/
 
@@ -517,6 +517,11 @@ select_action:
   jal random_gsa
 
 .L_select_action_endJT:
+
+  li t1, CURR_STATE
+  lw t1, 0(t1)
+  li t2, RUN
+  beq t1, t2, .L_select_action_0_1_2 /*Do not change step if state is RUN*/
 
   li t1, BUTTON_0
   ori t1, t1, BUTTON_1
