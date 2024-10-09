@@ -230,7 +230,7 @@ random_gsa:
 
   li t1, RANDOM
   lw t1, 0(t1)    /*Get random value*/
-  and t1, t1, 2   /*Modulo 2*/
+  andi t1, t1, 2   /*Modulo 2*/
   srli t1, t1, 1  /*Move possible 0x2 to the right*/
   sll t1, t1, s2  /*Move possible 0x1 to the right pixel position*/
   or a0, a0, t1   /*Put pixel value in a0*/
@@ -324,6 +324,7 @@ set_seed:
   add sp, sp, -4  /*PUSH s2*/
   sw s2, 0(sp)
 
+  mv t2, a0       /*Get seed id*/
   li t1, SEED     /*Get current seed id*/
   lw t2, 0(t1)
   lw s1, SEEDS    /*Get SEEDS base address*/
@@ -838,6 +839,7 @@ reset_game:
 
   /*Make function calls after initializing configuration*/
   jal decrement_step    /*Initialize seven seg*/
+  mv a0, x0
   jal set_seed        /*Put seed 0 on screen*/
   jal draw_gsa
 
