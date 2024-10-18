@@ -1,1 +1,4 @@
 /out
+dump.vcd
+*.tar.xz
+.DS_Store

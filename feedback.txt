@@ -1,0 +1,126 @@
+
+======== Testing summary ========
+clear_leds:
+	clear_leds on a random screen: passed
+Test clear_leds: 1 out of 1 passed -> Score: 2.0 / 2
+set_pixel:
+	set_pixel setting some pixel on empty screen: passed
+	set_pixel setting some pixel on non empty screen: passed
+	set_pixel setting some pixel on non empty screen: passed
+	set_pixel setting some pixel on non empty screen: passed
+Test set_pixel: 4 out of 4 passed -> Score: 2.0 / 2
+set_gsa:
+	set a horizontal gsa line to some value: passed
+	erase a previously set line with some new value: passed
+Test set_gsa: 2 out of 2 passed -> Score: 3.0 / 3
+get_gsa:
+	get a random line from a random gsa: passed
+	gets another random line from a random gsa: passed
+	gets another random line from a random gsa: passed
+Test get_gsa: 3 out of 3 passed -> Score: 3.0 / 3
+draw_gsa:
+	Draws a gsa on the leds: passed
+	Draws a gsa on the leds: passed
+	Draws a gsa on the leds: passed
+Test draw_gsa: 3 out of 3 passed -> Score: 10.0 / 10
+change_speed:
+	increments the speed: passed
+	decrements the speed: passed
+	increments the speed at max speed: passed
+	decrements the speed at min speed: passed
+Test change_speed: 4 out of 4 passed -> Score: 5.0 / 5
+pause_game:
+	changes the paused state from a random paused state: passed
+	changes the paused state again: passed
+Test pause_game: 2 out of 2 passed -> Score: 5.0 / 5
+change_steps:
+	Changes the number of steps in the INIT state with button 0, 1 and 2 set: passed
+	Changes the number of steps in the INIT state with button 2 and 1 set: passed
+	Changes the number of steps in the INIT state with button 2 and 0 set: passed
+	Changes the number of steps in the INIT state with button 2 set: passed
+	Changes the number of steps in the INIT state with button 1 and 0 set: passed
+	Changes the number of steps in the INIT state with button 1 set: passed
+	Changes the number of steps in the INIT state with button 0 set: passed
+	Changes the number of steps in the INIT state with no button set: passed
+Test change_steps: 8 out of 8 passed -> Score: 5.0 / 5
+increment_seed:
+	Increments the seed from a random number: passed
+	Increments the seed from a random number: passed
+Test increment_seed: 2 out of 2 passed -> Score: 5.0 / 5
+update_state:
+	INIT, button 2: passed
+	INIT, button 1: passed
+	INIT, button 0: passed
+	INIT, button jr: passed
+	INIT, button jc, SEED = N_SEEDS: passed
+	RAND, button 2: passed
+	RAND, button 1: passed
+	RAND, button 0: passed
+	RAND, button jc: passed
+	RAND, button jr: passed
+	RUN, button jc: passed
+	RUN, button jr: passed
+	RUN, button jb: passed
+	RUN, button jt: passed
+Test update_state: 14 out of 14 passed -> Score: 5.0 / 5
+select_action:
+	INIT, button JC: passed
+	INIT, button 0: passed
+	INIT, button 1: passed
+	INIT, button 2: passed
+	RAND, button 0: passed
+	RAND, button 1: passed
+	RAND, button 2: passed
+	RUN, button JC: passed
+	RUN, button JR: passed
+	RUN, button JL: passed
+	RUN, button 2: passed
+Test select_action: 11 out of 11 passed -> Score: 10.0 / 10
+cell_fate:
+	state: 1, neighbors: 0: passed
+	state: 1, neighbors: 1: passed
+	state: 0, neighbors: 0: passed
+	state: 1, neighbors: 2: passed
+	state: 1, neighbors: 3: passed
+	state: 1, neighbors: 4: passed
+	state: 1, neighbors: 5: passed
+	state: 1, neighbors: 6: passed
+	state: 0, neighbors: 3: passed
+	state: 0, neighbors: 2: passed
+Test cell_fate: 10 out of 10 passed -> Score: 5.0 / 5
+find_neighbours:
+	0 neighbours: passed
+	1 neighbours: passed
+	2 neighbours: passed
+	2 neighbours: passed
+	3 neighbours: passed
+	4 neighbours: passed
+	6 neighbours: passed
+	2 neighbours: passed
+	3 neighbours: passed
+Test find_neighbours: 9 out of 9 passed -> Score: 10.0 / 10
+update_gsa:
+	update gsa from a random state, RUNNING: passed
+	update gsa from a random state, PAUSED: passed
+Test update_gsa: 2 out of 2 passed -> Score: 10.0 / 10
+mask:
+	Mask 3 on a random gsa: passed
+	Mask 0 on a random gsa: passed
+Test mask: 2 out of 2 passed -> Score: 5.0 / 5
+get_input:
+	random button pressed: passed
+Test get_input: 1 out of 1 passed -> Score: 5.0 / 5
+decrement_step:
+	decrement step, PAUSED RUN: passed
+	decrement step, RUNNING RUN: passed
+	decrement step, PAUSED INIT: passed
+	decrement step, PAUSED RAND: passed
+Test decrement_step: 4 out of 4 passed -> Score: 5.0 / 5
+reset_game:
+	reset_game from a random memory state: passed
+Test reset_game: 1 out of 1 passed -> Score: 5.0 / 5
+======== Total score: 100.0 / 100 ========
+Note that 100% score corresponds to 80% of the maximum possible score on the
+project. For the remaining 20% you will need to make a successful live
+demonstration of the game to the Teaching Assistants.
+

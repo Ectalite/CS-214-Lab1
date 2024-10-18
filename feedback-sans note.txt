@@ -1,0 +1,83 @@
+warning: violating calling convention with register a0 in .L_draw_gsa_loop before instruction 'jal get_gsa  /*Load line from GSA*/'
+warning: violating calling convention with register a0 in .L_increment_seed_loop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register a1 in .L_increment_seed_loop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register t1 in .L_increment_seed_loop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register t2 in .L_increment_seed_loop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register t3 in .L_increment_seed_loop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register t1 in .L_increment_seed_random before instruction 'jal random_gsa'
+warning: violating calling convention with register a0 in .L_update_state_endJR before instruction 'jal reset_game    /*We don't need to return from reset*/'
+warning: violating calling convention with register t1 in .L_update_state_endJR before instruction 'jal reset_game    /*We don't need to return from reset*/'
+warning: violating calling convention with register t2 in .L_update_state_endJR before instruction 'jal reset_game    /*We don't need to return from reset*/'
+warning: violating calling convention with register t3 in .L_update_state_endJR before instruction 'jal reset_game    /*We don't need to return from reset*/'
+warning: violating calling convention with register a0 in /*s1 before instruction 'jal increment_seed'
+warning: violating calling convention with register t1 in /*s1 before instruction 'jal increment_seed'
+warning: violating calling convention with register t2 in /*s1 before instruction 'jal increment_seed'
+warning: violating calling convention with register a0 in .L_select_action_endJC before instruction 'jal change_speed'
+warning: violating calling convention with register t1 in .L_select_action_endJC before instruction 'jal change_speed'
+warning: violating calling convention with register t2 in .L_select_action_endJC before instruction 'jal change_speed'
+warning: violating calling convention with register a0 in .L_select_action_endJR before instruction 'jal change_speed'
+warning: violating calling convention with register t1 in .L_select_action_endJR before instruction 'jal change_speed'
+warning: violating calling convention with register t2 in .L_select_action_endJR before instruction 'jal change_speed'
+warning: violating calling convention with register t1 in .L_select_action_endJR_JL before instruction 'jal random_gsa'
+warning: violating calling convention with register t2 in .L_select_action_endJR_JL before instruction 'jal random_gsa'
+warning: violating calling convention with register a0 in .L_select_action_endJT before instruction 'jal change_steps'
+warning: violating calling convention with register a1 in .L_select_action_endJT before instruction 'jal change_steps'
+warning: violating calling convention with register t1 in .L_select_action_endJT before instruction 'jal change_steps'
+warning: violating calling convention with register t2 in .L_select_action_endJT before instruction 'jal change_steps'
+warning: violating calling convention with register t1 in reset_game before instruction 'jal decrement_step    /*Initialize seven seg*/'
+warning: violating calling convention with register t2 in reset_game before instruction 'jal decrement_step    /*Initialize seven seg*/'
+warning: violating calling convention with register a0 in reset_game before instruction 'jal set_seed        /*Put seed 0 on screen*/'
+warning: violating calling convention with register a0 in .L_find_neighbours_A before instruction 'jal get_gsa   /*Get GSA line*/'
+warning: violating calling convention with register a1 in .L_find_neighbours_A before instruction 'jal get_gsa   /*Get GSA line*/'
+warning: violating calling convention with register t1 in .L_find_neighbours_A before instruction 'jal get_gsa   /*Get GSA line*/'
+warning: violating calling convention with register a0 in .L_find_neighbours_B before instruction 'jal get_gsa     /*Get GSA line*/'
+warning: violating calling convention with register t1 in .L_find_neighbours_B before instruction 'jal get_gsa     /*Get GSA line*/'
+warning: violating calling convention with register t2 in .L_find_neighbours_B before instruction 'jal get_gsa     /*Get GSA line*/'
+warning: violating calling convention with register a0 in .L_find_neighbours_B before instruction 'jal get_gsa     /*Get GSA line*/'
+warning: violating calling convention with register t1 in .L_find_neighbours_B before instruction 'jal get_gsa     /*Get GSA line*/'
+warning: violating calling convention with register t2 in .L_find_neighbours_B before instruction 'jal get_gsa     /*Get GSA line*/'
+warning: violating calling convention with register a0 in .L_update_gsa_inloop before instruction 'jal find_neighbours'
+warning: violating calling convention with register a1 in .L_update_gsa_inloop before instruction 'jal find_neighbours'
+warning: violating calling convention with register t1 in .L_update_gsa_inloop before instruction 'jal find_neighbours'
+warning: violating calling convention with register t2 in .L_update_gsa_inloop before instruction 'jal find_neighbours'
+warning: violating calling convention with register a0 in .L_mask_gsaloop before instruction 'jal get_gsa     /*Load line*/'
+warning: violating calling convention with register t1 in .L_mask_gsaloop before instruction 'jal get_gsa     /*Load line*/'
+warning: violating calling convention with register a0 in .L_mask_gsaloop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register a1 in .L_mask_gsaloop before instruction 'jal set_gsa     /*Store line*/'
+warning: violating calling convention with register t1 in .L_mask_gsaloop before instruction 'jal set_gsa     /*Store line*/'
+clear_leds:
+	success
+set_pixel:
+	success
+set_gsa:
+	success
+get_gsa:
+	success
+draw_gsa:
+	success
+change_speed:
+	success
+pause_game:
+	success
+change_steps:
+	success
+increment_seed:
+	success
+update_state:
+	success
+select_action:
+	success
+cell_fate:
+	success
+find_neighbours:
+	success
+update_gsa:
+	success
+mask:
+	success
+get_input:
+	success
+decrement_step:
+	success
+reset_game:
+	success
