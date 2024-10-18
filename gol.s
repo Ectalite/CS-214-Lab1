@@ -61,7 +61,6 @@ main:
   mv a0, s2             /*Give proper e to update_state*/
   jal update_state
   jal update_gsa
-  jal clear_leds
   jal mask
   jal draw_gsa
   jal wait
@@ -181,11 +180,7 @@ get_gsa:
 draw_gsa:
   sw ra, -4(sp)     /*PUSH return address*/
   sw s1, -8(sp)     /*PUSH s1*/
-  sw s2, -12(sp)    /*PUSH s2*/
-  sw s3, -16(sp)    /*PUSH s3*/
-  add sp, sp, -16   /*Update stack pointer*/
-
-  /*jal clear_leds*/  /*Clear everything*/
+  add sp, sp, -8   /*Update stack pointer*/
 
   mv s1, x0     /*Line iterator*/
 .L_draw_gsa_loop:
@@ -204,11 +199,9 @@ draw_gsa:
   li t1, N_GSA_LINES
   bltu s1, t1, .L_draw_gsa_loop /*Loop if line iterator < N_GSA_LINES*/
 
-  lw s3, 0(sp)    /*POP s3*/
-  lw s2, 4(sp)    /*POP s2*/
-  lw s1, 8(sp)    /*POP s1*/
-  lw ra, 12(sp)   /*POP return address*/
-  addi sp, sp, 16
+  lw s1, 0(sp)    /*POP s1*/
+  lw ra, 4(sp)   /*POP return address*/
+  addi sp, sp, 8
   ret
 /* END:draw_gsa */
 
